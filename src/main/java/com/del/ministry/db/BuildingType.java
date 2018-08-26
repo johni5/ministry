@@ -50,10 +50,6 @@ public class BuildingType {
 
     @Override
     public String toString() {
-        return "BuildingType{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", shortName='" + shortName + '\'' +
-                '}';
+        return name;
     }
 }

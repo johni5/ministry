@@ -1,5 +1,6 @@
 package com.del.ministry.view;
 
+import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.actions.MainFrameActions;
 import com.del.ministry.view.forms.*;
@@ -21,6 +22,10 @@ public class MainFrame extends JFrame {
     private IFormActionListener<BuildingIForm> buildingFormListener;
     private IFormActionListener<BuildingTypeIForm> btFormListener;
     private IFormActionListener<CityIForm> cityFormListener;
+
+    private JMenu menu_1;
+
+    private final static JLabel STATUS_TEXT = new JLabel();
 
     /**
      * Create the frame.
@@ -47,7 +52,7 @@ public class MainFrame extends JFrame {
         });
         menu.add(menuItem);
 
-        JMenu menu_1 = new JMenu("Данные");
+        menu_1 = new JMenu("Данные");
         menuBar.add(menu_1);
 
         JMenuItem menuItem_1 = new JMenuItem("Улица");
@@ -83,12 +88,31 @@ public class MainFrame extends JFrame {
         menuItem_6.addActionListener(btFormListener);
         menu_1.add(menuItem_6);
 
+        JPanel statusBar = new JPanel(new BorderLayout(0, 0));
+        STATUS_TEXT.setFont(new Font("Tahoma", Font.PLAIN, 12));
+        STATUS_TEXT.setPreferredSize(new Dimension(100, 20));
+        statusBar.add(STATUS_TEXT);
+
         desktop = new JDesktopPane();
         desktop.setBackground(Color.LIGHT_GRAY);
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-        setContentPane(desktop);
+        getContentPane().add(desktop, BorderLayout.CENTER);
+        getContentPane().add(statusBar, BorderLayout.SOUTH);
 
-        addWindowListener(new MainFrameActions());
+        addWindowListener(new MainFrameActions(this));
+    }
+
+    public void setStatusDB_ERROR() {
+        menu_1.setEnabled(false);
+        setStatusText("Нет соединения с базой данных");
+    }
+
+    public void setStatusDB_OK() {
+        setStatusText("Соединение с базой данных установлено");
+    }
+
+    public static void setStatusText(String message) {
+        STATUS_TEXT.setText(message);
     }
 
     class IFormActionListener<E extends JInternalFrame> implements ActionListener {
@@ -102,10 +126,10 @@ public class MainFrame extends JFrame {
 
         public void actionPerformed(ActionEvent ae) {
             try {
-                if (instance == null) {
+                if (instance == null || instance.isClosed() || !instance.isVisible()) {
                     instance = eClass.newInstance();
                     instance.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-                    getContentPane().add(instance);
+                    desktop.add(instance);
                 }
                 instance.setVisible(true);
                 instance.setSelected(true);
@@ -114,9 +138,6 @@ public class MainFrame extends JFrame {
             }
         }
 
-        public E getInstance() {
-            return instance;
-        }
     }
 
 }

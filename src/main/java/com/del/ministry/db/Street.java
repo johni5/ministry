@@ -32,9 +32,6 @@ public class Street {
 
     @Override
     public String toString() {
-        return "Street{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

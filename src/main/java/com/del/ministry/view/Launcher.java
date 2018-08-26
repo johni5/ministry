@@ -23,6 +23,7 @@ public class Launcher {
                 MainFrame mainFrame = new MainFrame();
                 mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
                 mainFrame.setVisible(true);
+                MainFrame.setStatusText("Идет загрузка, подождите...");
             }
         });
     }

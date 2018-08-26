@@ -2,6 +2,7 @@ package com.del.ministry.view.actions;
 
 import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.utils.SystemEnv;
+import com.del.ministry.view.MainFrame;
 import org.apache.log4j.Logger;
 
 import java.awt.event.WindowEvent;
@@ -10,6 +11,12 @@ import java.awt.event.WindowListener;
 public class MainFrameActions implements WindowListener {
 
     final static private Logger logger = Logger.getLogger(MainFrameActions.class);
+
+    private MainFrame mainFrame;
+
+    public MainFrameActions(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+    }
 
     @Override
     public void windowOpened(WindowEvent e) {
@@ -20,13 +27,23 @@ public class MainFrameActions implements WindowListener {
         }
         logger.info("... success.");
         logger.info("Init DB connection...");
-        ServiceManager.getInstance();
-        logger.info("... success.");
+        try {
+            ServiceManager.getInstance();
+            mainFrame.setStatusDB_OK();
+            logger.info("... success.");
+        } catch (Exception e1) {
+            logger.info("... error connection to data base", e1);
+            mainFrame.setStatusDB_ERROR();
+        }
     }
 
     @Override
     public void windowClosing(WindowEvent e) {
-        ServiceManager.close();
+        try {
+            ServiceManager.close();
+        } catch (Exception e1) {
+            //
+        }
         logger.info("================================= WINDOW CLOSING =================================");
     }
 

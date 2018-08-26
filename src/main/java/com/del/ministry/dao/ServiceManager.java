@@ -45,7 +45,7 @@ public class ServiceManager {
     }
 
     private EntityManager getEntityManager() {
-        if (entityManager == null || !entityManager.isOpen()) {
+        if (!isReady()) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("ministry");
             entityManager = emf.createEntityManager();
         }
@@ -53,7 +53,11 @@ public class ServiceManager {
     }
 
     private void closeConnections() {
-        getEntityManager().close();
+        if (isReady()) entityManager.close();
+    }
+
+    public boolean isReady() {
+        return entityManager != null && entityManager.isOpen();
     }
 
     /*DISTRICT*/
@@ -196,8 +200,8 @@ public class ServiceManager {
         getProvider().getBuildingDAO().removeAndCommit(id);
     }
 
-    public List<Building> findBuildings() throws CommonException {
-        return getProvider().getBuildingDAO().findAll();
+    public List<Building> findBuildings(Long areaId, Long streetId) throws CommonException {
+        return getProvider().getBuildingDAO().findAll(areaId, streetId);
     }
 
 }

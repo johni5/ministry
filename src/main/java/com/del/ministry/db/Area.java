@@ -32,9 +32,6 @@ public class Area {
 
     @Override
     public String toString() {
-        return "Area{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

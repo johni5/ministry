@@ -2,8 +2,9 @@ package com.del.ministry.db;
 
 import javax.persistence.*;
 
-@Table(name = "BUILDING")
 @Entity(name = "Building")
+@Table(name = "BUILDING",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"CITY_ID", "STREET_ID", "NUMBER"}))
 public class Building {
 
     @Id
@@ -11,19 +12,19 @@ public class Building {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "CITY_ID")
+    @JoinColumn(name = "CITY_ID", nullable = false)
     private City city;
 
     @ManyToOne
-    @JoinColumn(name = "STREET_ID")
+    @JoinColumn(name = "AREA_ID", nullable = false)
+    private Area area;
+
+    @ManyToOne
+    @JoinColumn(name = "STREET_ID", nullable = false)
     private Street street;
 
     @ManyToOne
-    @JoinColumn(name = "DISTRICT_ID")
-    private District district;
-
-    @ManyToOne
-    @JoinColumn(name = "TYPE_ID")
+    @JoinColumn(name = "TYPE_ID", nullable = false)
     private BuildingType type;
 
     @Basic(optional = false)
@@ -31,8 +32,8 @@ public class Building {
     private String number;
 
     @Basic(optional = false)
-    @Column(name = "MAX_ADDRESSES", nullable = false)
-    private Integer maxAddresses;
+    @Column(name = "DOORS", nullable = false)
+    private Integer doors;
 
     @Basic
     @Column(name = "ENTRANCES")
@@ -66,12 +67,12 @@ public class Building {
         this.street = street;
     }
 
-    public District getDistrict() {
-        return district;
+    public Area getArea() {
+        return area;
     }
 
-    public void setDistrict(District district) {
-        this.district = district;
+    public void setArea(Area area) {
+        this.area = area;
     }
 
     public BuildingType getType() {
@@ -90,12 +91,12 @@ public class Building {
         this.number = number;
     }
 
-    public Integer getMaxAddresses() {
-        return maxAddresses;
+    public Integer getDoors() {
+        return doors;
     }
 
-    public void setMaxAddresses(Integer maxAddresses) {
-        this.maxAddresses = maxAddresses;
+    public void setDoors(Integer doors) {
+        this.doors = doors;
     }
 
     public Integer getEntrances() {
@@ -120,10 +121,10 @@ public class Building {
                 "id=" + id +
                 ", city=" + city +
                 ", street=" + street +
-                ", district=" + district +
+                ", area=" + area +
                 ", type=" + type +
                 ", number='" + number + '\'' +
-                ", maxAddresses=" + maxAddresses +
+                ", doors=" + doors +
                 ", entrances=" + entrances +
                 ", floors=" + floors +
                 '}';
