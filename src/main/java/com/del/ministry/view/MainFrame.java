@@ -24,6 +24,7 @@ public class MainFrame extends JFrame {
     private IFormActionListener<CityIForm> cityFormListener;
 
     private JMenu menu_1;
+    private JMenu menu_2;
 
     private final static JLabel STATUS_TEXT = new JLabel();
 
@@ -39,7 +40,6 @@ public class MainFrame extends JFrame {
         setJMenuBar(menuBar);
 
         JMenu menu = new JMenu("Файл");
-        menuBar.add(menu);
 
         JMenuItem menuItem = new JMenuItem("Выход");
         menuItem.addActionListener(new ActionListener() {
@@ -52,18 +52,17 @@ public class MainFrame extends JFrame {
         });
         menu.add(menuItem);
 
-        menu_1 = new JMenu("Данные");
-        menuBar.add(menu_1);
-
-        JMenuItem menuItem_1 = new JMenuItem("Улица");
-        streetFormListener = new IFormActionListener<>(StreetIForm.class);
-        menuItem_1.addActionListener(streetFormListener);
-        menu_1.add(menuItem_1);
+        menu_1 = new JMenu("Адреса");
 
         JMenuItem menuItem_2 = new JMenuItem("Район");
         areaFormListener = new IFormActionListener<>(AreaIForm.class);
         menuItem_2.addActionListener(areaFormListener);
         menu_1.add(menuItem_2);
+
+        JMenuItem menuItem_1 = new JMenuItem("Улица");
+        streetFormListener = new IFormActionListener<>(StreetIForm.class);
+        menuItem_1.addActionListener(streetFormListener);
+        menu_1.add(menuItem_1);
 
         JMenuItem menuItem_3 = new JMenuItem("Город");
         cityFormListener = new IFormActionListener<>(CityIForm.class);
@@ -87,6 +86,16 @@ public class MainFrame extends JFrame {
         btFormListener = new IFormActionListener<>(BuildingTypeIForm.class);
         menuItem_6.addActionListener(btFormListener);
         menu_1.add(menuItem_6);
+
+        menu_2 = new JMenu("Участки");
+        JMenuItem menuItem_2_1 = new JMenuItem("Список");
+        districtFormListener = new IFormActionListener<>(DistrictIForm.class);
+        menuItem_2_1.addActionListener(districtFormListener);
+        menu_2.add(menuItem_2_1);
+
+        menuBar.add(menu);
+        menuBar.add(menu_1);
+        menuBar.add(menu_2);
 
         JPanel statusBar = new JPanel(new BorderLayout(0, 0));
         STATUS_TEXT.setFont(new Font("Tahoma", Font.PLAIN, 12));

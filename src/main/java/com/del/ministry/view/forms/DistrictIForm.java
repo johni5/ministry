@@ -23,7 +23,7 @@ public class DistrictIForm extends JInternalFrame {
      * Create the frame.
      */
     public DistrictIForm() {
-        super("Район", true, true, true, true);
+        super("Участки", true, true, true, true);
         setBounds(100, 100, 600, 400);
 
         JPanel panel = new JPanel();
