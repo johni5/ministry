@@ -1,6 +1,7 @@
 package com.del.ministry.db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -8,15 +9,15 @@ import java.util.Date;
  */
 @Table(name = "APPOINTMENT")
 @Entity(name = "Appointment")
-public class Appointment {
+public class Appointment implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "AREA_ID")
-    private Area area;
+    @JoinColumn(name = "DISTRICT_ID")
+    private District district;
 
     @Basic(optional = false)
     @Column(name = "OWNER", nullable = false)
@@ -76,23 +77,11 @@ public class Appointment {
         this.description = description;
     }
 
-    public Area getArea() {
-        return area;
+    public District getDistrict() {
+        return district;
     }
 
-    public void setArea(Area area) {
-        this.area = area;
-    }
-
-    @Override
-    public String toString() {
-        return "Appointment{" +
-                "id=" + id +
-                ", area=" + area +
-                ", owner='" + owner + '\'' +
-                ", assigned=" + assigned +
-                ", completed=" + completed +
-                ", description='" + description + '\'' +
-                '}';
+    public void setDistrict(District district) {
+        this.district = district;
     }
 }

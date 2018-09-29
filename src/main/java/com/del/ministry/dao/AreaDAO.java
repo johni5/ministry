@@ -12,7 +12,6 @@ public class AreaDAO extends AbstractDAO<Area, Long> {
     }
 
     public List<Area> findAll() {
-        manager.clear();
         return manager.createQuery("from Area order by name").getResultList();
     }
 }

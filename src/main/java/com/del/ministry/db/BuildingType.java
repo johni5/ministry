@@ -1,6 +1,7 @@
 package com.del.ministry.db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Тип строения:
@@ -10,7 +11,7 @@ import javax.persistence.*;
  */
 @Table(name = "BUILDING_TYPE")
 @Entity(name = "BuildingType")
-public class BuildingType {
+public class BuildingType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

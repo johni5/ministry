@@ -18,7 +18,7 @@ public class DistrictGenerator {
         System.out.println(bitSet);
     }
 
-    public static int rndDoor(Building building, int floorsMax, int dispersion, int[] excludes, List<Integer> prepared) {
+    public static int rndDoor(Building building, int floorsMax, int[] excludes) {
         int[] numbers = prepareAvailable(1, building.getDoors(), excludes,
                 Math.max(floorsMax, 1),
                 Math.max(building.getFloors(), 1),
@@ -45,7 +45,6 @@ public class DistrictGenerator {
                 int maxDoorsPerEnter = d1.divide(d2, 0, BigDecimal.ROUND_UP).intValue() * floorsMax;
                 int doorsPerEnter = d1.divide(d3, 0, BigDecimal.ROUND_UP).intValue();
                 int firstDoor = from + (doorsPerEnter * (enter - 1));
-                System.out.println(firstDoor + " - " + (firstDoor + maxDoorsPerEnter - 1));
                 floorsBS.set(firstDoor, firstDoor + maxDoorsPerEnter);
             }
             countBS.and(floorsBS);

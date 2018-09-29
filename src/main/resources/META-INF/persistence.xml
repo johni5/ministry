@@ -14,6 +14,7 @@
         <class>com.del.ministry.db.BuildingType</class>
         <class>com.del.ministry.db.City</class>
         <class>com.del.ministry.db.District</class>
+        <class>com.del.ministry.db.DistrictAddress</class>
         <class>com.del.ministry.db.Street</class>
         <properties>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>

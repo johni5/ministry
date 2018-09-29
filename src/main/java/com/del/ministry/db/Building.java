@@ -1,29 +1,30 @@
 package com.del.ministry.db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity(name = "Building")
 @Table(name = "BUILDING",
         uniqueConstraints = @UniqueConstraint(columnNames = {"CITY_ID", "STREET_ID", "NUMBER"}))
-public class Building {
+public class Building implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CITY_ID", nullable = false)
     private City city;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "AREA_ID", nullable = false)
     private Area area;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "STREET_ID", nullable = false)
     private Street street;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TYPE_ID", nullable = false)
     private BuildingType type;
 

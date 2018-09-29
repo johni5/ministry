@@ -12,7 +12,6 @@ public class BuildingTypeDAO extends AbstractDAO<BuildingType, Long> {
     }
 
     public List<BuildingType> findAll() {
-        manager.clear();
         return manager.createQuery("from BuildingType ").getResultList();
     }
 }

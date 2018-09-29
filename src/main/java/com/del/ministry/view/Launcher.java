@@ -10,6 +10,8 @@ public class Launcher {
 
     final static Logger logger = Logger.getLogger(Launcher.class);
 
+    public static MainFrame mainFrame;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -20,7 +22,7 @@ public class Launcher {
                     logger.error(e.getMessage(), e);
                 }
                 JFrame.setDefaultLookAndFeelDecorated(true);
-                MainFrame mainFrame = new MainFrame();
+                mainFrame = new MainFrame();
                 mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
                 mainFrame.setVisible(true);
                 MainFrame.setStatusText("Идет загрузка, подождите...");

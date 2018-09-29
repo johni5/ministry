@@ -60,6 +60,10 @@ public class ServiceManager {
         return entityManager != null && entityManager.isOpen();
     }
 
+    public void clear() {
+        getEntityManager().clear();
+    }
+
     /*DISTRICT*/
 
     public void createDistrict(District district) throws CommonException {
@@ -71,10 +75,10 @@ public class ServiceManager {
     }
 
     public void deleteDistrict(Long id) throws CommonException {
-        getProvider().getDistrictDAO().removeAndCommit(id);
+        getProvider().getDistrictDAO().checkAndRemove(id);
     }
 
-    public List<District> findDistricts() throws CommonException {
+    public List<District> allDistricts() throws CommonException {
         return getProvider().getDistrictDAO().findAll();
     }
 
@@ -202,6 +206,32 @@ public class ServiceManager {
 
     public List<Building> findBuildings(Long areaId, Long streetId) throws CommonException {
         return getProvider().getBuildingDAO().findAll(areaId, streetId);
+    }
+
+    /*DISTRICT ADDRESS*/
+
+    public void createDistrictAddress(DistrictAddress item) throws CommonException {
+        getProvider().getDistrictAddressDAO().createAndCommit(item);
+    }
+
+    public void updateDistrictAddress(DistrictAddress item) throws CommonException {
+        getProvider().getDistrictAddressDAO().updateAndCommit(item);
+    }
+
+    public void deleteDistrictAddress(Long id) throws CommonException {
+        getProvider().getDistrictAddressDAO().removeAndCommit(id);
+    }
+
+    public List<DistrictAddress> allDistrictAddresses() throws CommonException {
+        return getProvider().getDistrictAddressDAO().findAll();
+    }
+
+    public List<DistrictAddress> findDistrictAddresses(Long districtId) throws CommonException {
+        return getProvider().getDistrictAddressDAO().findAll();
+    }
+
+    public List<Integer> getUsedDoors(Long buildingId) throws CommonException {
+        return getProvider().getDistrictAddressDAO().getUsedDoors(buildingId);
     }
 
 }

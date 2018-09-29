@@ -201,15 +201,13 @@ public class BuildingIForm extends JInternalFrame {
                             numberTF.setText("");
                             buildingTableModel.refresh();
                         } catch (Exception e1) {
-                            Utils.getLogger().error(e1.getMessage(), e1);
-                            MainFrame.setStatusText("Ошибка сохранения записи!");
+                            MainFrame.setStatusError("Ошибка сохранения записи!", e1);
                         }
                     }
                 }
             });
         } catch (CommonException e) {
-            MainFrame.setStatusText("Ошибка получения списка данных!");
-            Utils.getLogger().error(e.getMessage(), e);
+            MainFrame.setStatusError("Ошибка получения списка данных!", e);
         }
     }
 
@@ -304,50 +302,50 @@ public class BuildingIForm extends JInternalFrame {
                         if (!Objects.deepEquals(aValue, item.getCity())) {
                             item.setCity((City) aValue);
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 2:
                         if (!Objects.deepEquals(aValue, item.getArea())) {
                             item.setArea((Area) aValue);
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 3:
                         if (!Objects.deepEquals(aValue, item.getStreet())) {
                             item.setStreet((Street) aValue);
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 4:
                         if (!Objects.deepEquals(aValue, item.getNumber())) {
                             item.setNumber(aValue.toString());
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 5:
                         if (!Objects.deepEquals(aValue, item.getType())) {
                             item.setType((BuildingType) aValue);
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 6:
                         if (!Objects.deepEquals(aValue, item.getDoors())) {
                             item.setDoors(((Number) aValue).intValue());
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 7:
                         if (!Objects.deepEquals(aValue, item.getEntrances())) {
                             item.setEntrances(((Number) aValue).intValue());
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                     case 8:
                         if (!Objects.deepEquals(aValue, item.getFloors())) {
                             item.setFloors(((Number) aValue).intValue());
                             wasChanged(rowIndex);
-                            break;
                         }
+                        break;
                 }
             }
         }
@@ -378,8 +376,7 @@ public class BuildingIForm extends JInternalFrame {
                     );
                     commitButton.setEnabled(false);
                 } catch (Exception e) {
-                    MainFrame.setStatusText("Ошибка получения данных!");
-                    Utils.getLogger().error(e.getMessage(), e);
+                    MainFrame.setStatusError("Ошибка получения данных!", e);
                 }
             }
             return data;
@@ -391,8 +388,7 @@ public class BuildingIForm extends JInternalFrame {
                 try {
                     ServiceManager.getInstance().updateBuilding(getData().get(index));
                 } catch (Exception e) {
-                    MainFrame.setStatusText("Ошибка сохранения записи!");
-                    Utils.getLogger().error(e.getMessage(), e);
+                    MainFrame.setStatusError("Ошибка сохранения записи!", e);
                 }
             }
             refresh();
@@ -404,8 +400,7 @@ public class BuildingIForm extends JInternalFrame {
                 try {
                     ServiceManager.getInstance().deleteBuilding(getData().get(row).getId());
                 } catch (Exception e) {
-                    MainFrame.setStatusText("Ошибка удаления записи!");
-                    Utils.getLogger().error(e.getMessage(), e);
+                    MainFrame.setStatusError("Ошибка удаления записи!", e);
                 }
             }
             refresh();

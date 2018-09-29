@@ -12,7 +12,6 @@ public class AppointmentDAO extends AbstractDAO<Appointment, Long> {
     }
 
     public List<Appointment> findAll() {
-        manager.clear();
         return manager.createQuery("from Appointment ").getResultList();
     }
 }

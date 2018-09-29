@@ -32,6 +32,10 @@ public class DaoProvider {
         return lookup(BuildingDAO.class);
     }
 
+    public DistrictAddressDAO getDistrictAddressDAO() throws CommonException {
+        return lookup(DistrictAddressDAO.class);
+    }
+
     public BuildingTypeDAO getBuildingTypeDAO() throws CommonException {
         return lookup(BuildingTypeDAO.class);
     }

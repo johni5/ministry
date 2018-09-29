@@ -1,6 +1,7 @@
 package com.del.ministry.db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * Типы одресов могут меняться в процессе обработки.
@@ -13,7 +14,7 @@ import javax.persistence.*;
  */
 @Table(name = "ADDRESS_TYPE")
 @Entity(name = "AddressType")
-public class AddressType {
+public class AddressType implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

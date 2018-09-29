@@ -12,7 +12,6 @@ public class CityDAO extends AbstractDAO<City, Long> {
     }
 
     public List<City> findAll() {
-        manager.clear();
         return manager.createQuery("from City ").getResultList();
     }
 }

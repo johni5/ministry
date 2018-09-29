@@ -68,20 +68,17 @@ public class DistrictIForm extends JInternalFrame {
 
         renderTable();
 
-        btnNewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String number = textField.getText();
-                if (!Utils.isTrimmedEmpty(number)) {
-                    District district = new District();
-                    district.setNumber(number);
-                    try {
-                        ServiceManager.getInstance().createDistrict(district);
-                        textField.setText("");
-                        renderTable();
-                    } catch (CommonException e1) {
-                        Utils.getLogger().error(e1.getMessage(), e1);
-                    }
+        btnNewButton.addActionListener(e -> {
+            String number = textField.getText();
+            if (!Utils.isTrimmedEmpty(number)) {
+                District district = new District();
+                district.setNumber(number);
+                try {
+                    ServiceManager.getInstance().createDistrict(district);
+                    textField.setText("");
+                    renderTable();
+                } catch (CommonException e1) {
+                    Utils.getLogger().error(e1.getMessage(), e1);
                 }
             }
         });
@@ -89,7 +86,7 @@ public class DistrictIForm extends JInternalFrame {
 
     private void renderTable() {
         try {
-            List<District> districts = ServiceManager.getInstance().findDistricts();
+            List<District> districts = ServiceManager.getInstance().allDistricts();
             table.setModel(new DistrictTableModel(districts));
         } catch (CommonException e) {
             Utils.getLogger().error(e.getMessage(), e);

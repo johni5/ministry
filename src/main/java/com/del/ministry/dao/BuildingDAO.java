@@ -13,7 +13,6 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
     }
 
     public List<Building> findAll(Long areaId, Long streetId) {
-        manager.clear();
         String sql = "select b from Building b where 1=1 ";
         if (areaId != null) {
             sql += " and b.area.id=:areaId";

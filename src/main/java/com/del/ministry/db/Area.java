@@ -1,10 +1,11 @@
 package com.del.ministry.db;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Table(name = "AREA")
 @Entity(name = "Area")
-public class Area {
+public class Area implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

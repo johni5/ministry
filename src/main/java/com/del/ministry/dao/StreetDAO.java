@@ -12,7 +12,6 @@ public class StreetDAO extends AbstractDAO<Street, Long> {
     }
 
     public List<Street> findAll() {
-        manager.clear();
         return manager.createQuery("from Street order by name").getResultList();
     }
 }
