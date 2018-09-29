@@ -1,5 +1,6 @@
 package com.del.ministry.view.forms;
 
+import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.models.AreaItem;
 import com.del.ministry.view.models.DistrictAddAddress;
 import com.jgoodies.forms.builder.FormBuilder;
@@ -8,7 +9,7 @@ import com.jgoodies.forms.factories.Paddings;
 import javax.swing.*;
 import java.awt.*;
 
-public class GenerateAddressIForm extends JInternalFrame {
+public class GenerateAddressIForm extends ObservableIFrame {
 
     private JTextField maxDoorsF;
     private JList<AreaItem> areaListF;

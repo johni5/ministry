@@ -5,6 +5,7 @@ import com.del.ministry.db.District;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.view.MainFrame;
+import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.models.DistrictAddressItem;
 import com.del.ministry.view.models.DistrictNumbers;
@@ -14,11 +15,11 @@ import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
 import java.util.List;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
-public class DistrictListIForm extends JInternalFrame {
+public class DistrictListIForm extends ObservableIFrame implements Observer {
 
     private JTextField newDistrictNumberF;
     private JComboBox<DistrictNumbers> districtNumbersF;
@@ -50,6 +51,8 @@ public class DistrictListIForm extends JInternalFrame {
         generateBtn = new JButton("Заполнить");
         newBtn = new JButton("Новый");
 
+        deleteAddressBtn.setEnabled(false);
+
         panel.add(FormBuilder.create().
                         columns("50, 5, 80, 5, 150, 5, 100")
                         .rows("p, 5, p, 5, p, 5, p, 5, p, 5, p, p")
@@ -57,8 +60,8 @@ public class DistrictListIForm extends JInternalFrame {
                         .add("Участок:").xy(1, 1).add(districtNumbersF).xy(3, 1).add(deleteBtn).xy(7, 1)
                         .addSeparator("Адреса").xyw(1, 3, 7)
                         .add(districtAddressF).xywh(1, 5, 5, 5)
-                        .add(deleteAddressBtn).xy(7, 5)
-                        .add(addBtn).xy(7, 7)
+                        .add(addBtn).xy(7, 5)
+                        .add(deleteAddressBtn).xy(7, 7)
                         .add(generateBtn).xy(7, 9)
                         .addSeparator("Создать").xyw(1, 11, 7)
                         .add(newDistrictNumberF).xyw(1, 12, 3).add(newBtn).xy(7, 12)
@@ -71,7 +74,7 @@ public class DistrictListIForm extends JInternalFrame {
                 try {
                     ServiceManager.getInstance().deleteDistrict(selectedItem.getDistrict().getId());
                     MainFrame.setStatusText("Запись удалена");
-                    init();
+                    initDistrictList();
                 } catch (CommonException e1) {
                     MainFrame.setStatusError(e1.getMessage(), e1);
                 } catch (Exception e1) {
@@ -89,7 +92,7 @@ public class DistrictListIForm extends JInternalFrame {
                     ServiceManager.getInstance().createDistrict(d);
                     MainFrame.setStatusText("Участок создан");
                     newDistrictNumberF.setText("");
-                    init();
+                    initDistrictList();
                 } catch (Exception e1) {
                     MainFrame.setStatusError("Ошибка при сохранении участка", e1);
                 }
@@ -98,6 +101,7 @@ public class DistrictListIForm extends JInternalFrame {
 
         ShowIFrameActionListener<AddAddressIForm> addAddressFormAction = new ShowIFrameActionListener<>(AddAddressIForm.class);
         ShowIFrameActionListener<GenerateAddressIForm> generateFormAction = new ShowIFrameActionListener<>(GenerateAddressIForm.class);
+        addAddressFormAction.addObserver(this);
 
         addBtn.addActionListener(addAddressFormAction);
         generateBtn.addActionListener(generateFormAction);
@@ -108,12 +112,26 @@ public class DistrictListIForm extends JInternalFrame {
         });
 
         districtNumbersF.addActionListener(e -> initAddressList());
+        districtAddressF.addListSelectionListener(e -> deleteAddressBtn.setEnabled(districtAddressF.getSelectedIndex() > -1));
+        deleteAddressBtn.addActionListener(e -> {
+            try {
+                ServiceManager.getInstance().deleteDistrictAddress(districtAddressF.getSelectedValue().getAddress().getId());
+                initAddressList();
+            } catch (CommonException e1) {
+                MainFrame.setStatusError("Невозможно удалить адрес", e1);
+            }
+        });
 
         init();
         pack();
     }
 
     private void init() {
+        initDistrictList();
+        initAddressList();
+    }
+
+    private void initDistrictList() {
         try {
             List<District> districts = ServiceManager.getInstance().allDistricts();
             districtNumbersF.setModel(new DefaultComboBoxModel<>(new Vector<>(
@@ -122,7 +140,6 @@ public class DistrictListIForm extends JInternalFrame {
         } catch (CommonException e) {
             MainFrame.setStatusError("Нет доступа к участкам", e);
         }
-        initAddressList();
     }
 
     private void initAddressList() {
@@ -131,12 +148,18 @@ public class DistrictListIForm extends JInternalFrame {
             District district = selectedDistrict.getDistrict();
             try {
                 List<DistrictAddress> addresses = ServiceManager.getInstance().findDistrictAddresses(district.getId());
-                districtAddressF.setModel(new LinkedListModel<DistrictAddressItem>(
-                        addresses.stream().map(DistrictAddressItem::new).collect(Collectors.toList())));
+                List<DistrictAddressItem> collect = addresses.stream().
+                        map(DistrictAddressItem::new).sorted().collect(Collectors.toList());
+                districtAddressF.setModel(new LinkedListModel<DistrictAddressItem>(collect));
             } catch (Exception e) {
                 MainFrame.setStatusError("Нет доступа к адресам участка", e);
             }
         }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        initAddressList();
     }
 
 }

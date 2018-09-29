@@ -12,6 +12,6 @@ public class AddressTypeDAO extends AbstractDAO<AddressType, Long> {
     }
 
     public List<AddressType> findAll() {
-        return manager.createQuery("from AddressType ").getResultList();
+        return manager.createQuery("select at from AddressType at order by at.shortName").getResultList();
     }
 }

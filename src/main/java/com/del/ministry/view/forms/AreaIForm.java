@@ -4,6 +4,7 @@ import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.db.Area;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
+import com.del.ministry.view.actions.ObservableIFrame;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -19,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class AreaIForm extends JInternalFrame {
+public class AreaIForm extends ObservableIFrame {
 
     private JTable table;
     private AreaTableModel areaTableModel;

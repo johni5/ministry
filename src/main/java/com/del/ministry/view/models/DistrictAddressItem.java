@@ -7,12 +7,16 @@ import com.del.ministry.db.DistrictAddress;
  * Created by DodolinEL
  * date: 26.09.2018
  */
-public class DistrictAddressItem {
+public class DistrictAddressItem implements Comparable<DistrictAddressItem> {
 
     private DistrictAddress address;
 
     public DistrictAddressItem(DistrictAddress districtAddress) {
         this.address = districtAddress;
+    }
+
+    public DistrictAddress getAddress() {
+        return address;
     }
 
     @Override
@@ -23,5 +27,10 @@ public class DistrictAddressItem {
                 ", ул." + building.getStreet().getName() +
                 ", д." + building.getNumber() +
                 ", кв." + address.getNumber();
+    }
+
+    @Override
+    public int compareTo(DistrictAddressItem o) {
+        return toString().compareTo(o.toString());
     }
 }

@@ -227,7 +227,7 @@ public class ServiceManager {
     }
 
     public List<DistrictAddress> findDistrictAddresses(Long districtId) throws CommonException {
-        return getProvider().getDistrictAddressDAO().findAll();
+        return getProvider().getDistrictAddressDAO().findByDistrictId(districtId);
     }
 
     public List<Integer> getUsedDoors(Long buildingId) throws CommonException {
