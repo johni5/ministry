@@ -1,6 +1,8 @@
 package com.del.ministry.dao;
 
 import com.del.ministry.db.Building;
+import com.del.ministry.utils.query.QuerySequence;
+import com.del.ministry.view.filters.BuildingFilter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -12,22 +14,24 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
         super(manager, Building.class);
     }
 
-    public List<Building> findAll(Long areaId, Long streetId) {
-        String sql = "select b from Building b where 1=1 ";
-        if (areaId != null) {
-            sql += " and b.area.id=:areaId";
-        }
-        if (streetId != null) {
-            sql += " and b.street.id=:streetId";
-        }
-        sql += " order by area, street";
+    public List<Building> findAll(BuildingFilter filter) {
+        QuerySequence filterQuery = new QuerySequence().
+                and().inList("b.area.id", filter.getAreaIds()).
+                and().inList("b.street.id", filter.getStreetIds());
+        String sql = "select b from Building b where 1=1 " + filterQuery.getQuery() + " order by area, street";
         Query query = manager.createQuery(sql);
-        if (areaId != null) {
-            query.setParameter("areaId", areaId);
-        }
-        if (streetId != null) {
-            query.setParameter("streetId", streetId);
-        }
+        filterQuery.init(query);
         return query.getResultList();
+    }
+
+    public int maxFloor(List<Long> areas) {
+        if (areas != null && !areas.isEmpty()) {
+            return getInt(getManager().createQuery("select max(b.floors) from Building b inner join b.area a where a.id in (:areas)").
+                    setParameter("areas", areas).
+                    getSingleResult(), 0);
+        } else {
+            return getInt(getManager().createQuery("select max(b.floors) from Building b inner join b.area a").
+                    getSingleResult(), 0);
+        }
     }
 }

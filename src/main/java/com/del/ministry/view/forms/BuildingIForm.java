@@ -6,6 +6,7 @@ import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.filters.BuildingFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -370,11 +371,10 @@ public class BuildingIForm extends ObservableIFrame {
         public List<Building> getData() {
             if (data == null) {
                 try {
-                    data = ServiceManager.getInstance().findBuildings(
-                            ((Area) areaFilterCB.getSelectedItem()).getId(),
-                            ((Street) streetFilterCB.getSelectedItem()).getId()
-
-                    );
+                    BuildingFilter filter = new BuildingFilter();
+                    filter.setAreaIds(Lists.newArrayList(((Area) Objects.requireNonNull(areaFilterCB.getSelectedItem())).getId()));
+                    filter.setStreetIds(Lists.newArrayList(((Street) Objects.requireNonNull(streetFilterCB.getSelectedItem())).getId()));
+                    data = ServiceManager.getInstance().findBuildings(filter);
                     commitButton.setEnabled(false);
                 } catch (Exception e) {
                     MainFrame.setStatusError("Ошибка получения данных!", e);

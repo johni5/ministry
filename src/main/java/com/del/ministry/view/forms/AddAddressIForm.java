@@ -8,6 +8,7 @@ import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.filters.BuildingFilter;
 import com.del.ministry.view.models.AddressTypeItem;
 import com.del.ministry.view.models.DistrictAddAddress;
 import com.google.common.collect.Lists;
@@ -126,7 +127,7 @@ public class AddAddressIForm extends ObservableIFrame {
         this.district = district;
         setTitle("Редактировать участок '" + district.getNumber() + "'");
         try {
-            List<Building> buildings = ServiceManager.getInstance().findBuildings(null, null);
+            List<Building> buildings = ServiceManager.getInstance().findBuildings(BuildingFilter.EMPTY);
             LinkedListModel<DistrictAddAddress> model = buildings.stream().map(DistrictAddAddress::new).collect(Collectors.toCollection(LinkedListModel::new));
             districtAddAddressF.setModel(model);
         } catch (Exception e) {

@@ -2,6 +2,7 @@ package com.del.ministry.dao;
 
 import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
+import com.del.ministry.view.filters.BuildingFilter;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -204,8 +205,13 @@ public class ServiceManager {
         getProvider().getBuildingDAO().removeAndCommit(id);
     }
 
-    public List<Building> findBuildings(Long areaId, Long streetId) throws CommonException {
-        return getProvider().getBuildingDAO().findAll(areaId, streetId);
+    public List<Building> findBuildings(BuildingFilter filter) throws CommonException {
+        return getProvider().getBuildingDAO().findAll(filter);
+    }
+
+    // todo DodolinEL added
+    public int getMaxFloor(List<Long> areas) throws CommonException {
+        return getProvider().getBuildingDAO().maxFloor(areas);
     }
 
     /*DISTRICT ADDRESS*/
