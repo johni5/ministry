@@ -33,6 +33,10 @@ abstract public class AbstractDAO<T, ID> {
         return manager.merge(entity);
     }
 
+    public void refresh(T entity) {
+        manager.refresh(entity);
+    }
+
     public void removeAndCommit(ID id) {
         transaction(() -> {
             remove(id);
@@ -65,7 +69,7 @@ abstract public class AbstractDAO<T, ID> {
     }
 
     public static Long getLong(Object obj, Long def) {
-        return obj != null && obj instanceof Number ? ((Number) obj).longValue() : def;
+        return obj instanceof Number ? ((Number) obj).longValue() : def;
     }
 
     public static Integer getInt(Object obj, Integer dif) {

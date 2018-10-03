@@ -1,8 +1,7 @@
 package com.del.ministry.view.forms;
 
 import com.del.ministry.dao.ServiceManager;
-import com.del.ministry.db.Area;
-import com.del.ministry.db.Building;
+import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DistrictGenerator;
 import com.del.ministry.utils.ListUtil;
@@ -30,6 +29,8 @@ import java.util.stream.Stream;
 
 public class GenerateAddressIForm extends ObservableIFrame {
 
+    private District district;
+
     private JSpinner maxDoorsF;
     private JList<AreaItem> areaListF;
     private JComboBox<NumberItem> doorsPerBuildingF;
@@ -41,7 +42,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
      * Create the frame.
      */
     public GenerateAddressIForm() {
-        super("Выбрать адрес", false, true, false, true);
+        super("Заполнение участка случайными адресами", false, true, false, true);
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -119,8 +120,9 @@ public class GenerateAddressIForm extends ObservableIFrame {
         ServiceManager serviceManager = ServiceManager.getInstance();
         Map<Long, List<Integer>> usedDoorsAtAll = Maps.newHashMap();
         Map<Long, AtomicInteger> doorsCounter = Maps.newHashMap();
-
         try {
+            AddressType defaultAddressType = serviceManager.getDefaultAddressType();
+            int districtSize = ListUtil.size(serviceManager.findDistrictAddresses(getDistrict().getId()));
             List<Building> buildings = serviceManager.findBuildings(filter);
             for (Building building : buildings) {
                 usedDoorsAtAll.put(building.getId(), serviceManager.getUsedDoors(building.getId()));
@@ -133,7 +135,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
             NumberItem manualMaxDoors = doorsPerBuildingF.getItemAt(doorsPerBuildingF.getSelectedIndex());
             int ready = 0;
             int index = 0;
-            while (ready < (Integer) maxDoorsF.getValue()) {
+            while (ready < ((Integer) maxDoorsF.getValue()) - districtSize) {
                 Building building = readyBuildings.get(index);
                 List<Integer> usedDoors = usedDoorsAtAll.get(building.getId());
                 if (usedDoors.size() < building.getDoors()) {
@@ -152,10 +154,15 @@ public class GenerateAddressIForm extends ObservableIFrame {
                             readyBuildings.remove(index);
                             index--;
                         }
-                        System.out.println(ready + " -> " + building + " -> " + rndDoor +
-                                "(" + doorsCounter.get(building.getId()).get() + ")");
 
-                        // save DistrictAddress here
+//                        System.out.println(ready + " -> " + building + " -> " + rndDoor + "(" + doorsCounter.get(building.getId()).get() + ")");
+
+                        DistrictAddress da = new DistrictAddress();
+                        da.setDistrict(getDistrict());
+                        da.setBuilding(building);
+                        da.setType(defaultAddressType);
+                        da.setNumber(rndDoor);
+                        ServiceManager.getInstance().createDistrictAddress(da);
 
                         ready++;
                     } else {
@@ -171,10 +178,23 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 if (ListUtil.isEmpty(readyBuildings)) break;
                 index = (index + 1) % readyBuildings.size();
             }
-        } catch (CommonException e) {
-            MainFrame.setStatusError("Ошибка получения данных!", e);
+
+            if (ready > 0) {
+                MainFrame.setStatusText("К участку было привязано " + ready + " адресов");
+                notifyObservers();
+            } else MainFrame.setStatusError("Не был привязан ни один адрес");
+
+        } catch (Exception e) {
+            MainFrame.setStatusError("Ошибка получения/сохранения данных!", e);
         }
 
     }
 
+    public District getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(District district) {
+        this.district = district;
+    }
 }

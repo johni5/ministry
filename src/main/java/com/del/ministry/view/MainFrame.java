@@ -1,5 +1,6 @@
 package com.del.ministry.view;
 
+import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.actions.MainFrameActions;
 import com.del.ministry.view.actions.ShowIFrameActionListener;

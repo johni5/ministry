@@ -155,6 +155,10 @@ public class ServiceManager {
         return getProvider().getAddressTypeDAO().findAll();
     }
 
+    public AddressType getDefaultAddressType() throws CommonException {
+        return getProvider().getAddressTypeDAO().findDefault();
+    }
+
     /*BUILDING TYPE*/
 
     public void createBuildingType(BuildingType item) throws CommonException {
@@ -209,7 +213,6 @@ public class ServiceManager {
         return getProvider().getBuildingDAO().findAll(filter);
     }
 
-    // todo DodolinEL added
     public int getMaxFloor(List<Long> areas) throws CommonException {
         return getProvider().getBuildingDAO().maxFloor(areas);
     }

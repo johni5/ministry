@@ -16,6 +16,8 @@ import java.io.Serializable;
 @Entity(name = "AddressType")
 public class AddressType implements Serializable {
 
+    public final static String DEFAULT_TYPE = "1_DEFAULT";
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;

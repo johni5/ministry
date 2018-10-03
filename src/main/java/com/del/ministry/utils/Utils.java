@@ -14,4 +14,7 @@ public class Utils {
         return val == null || val.toString().trim().length() == 0;
     }
 
+    public static <T> T nvl(T t1, T t2) {
+        return t1 == null ? t2 : t1;
+    }
 }
