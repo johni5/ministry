@@ -196,5 +196,6 @@ public class GenerateAddressIForm extends ObservableIFrame {
 
     public void setDistrict(District district) {
         this.district = district;
+        setTitle("Заполнение участка '" + district.getNumber() + "' случайными адресами");
     }
 }

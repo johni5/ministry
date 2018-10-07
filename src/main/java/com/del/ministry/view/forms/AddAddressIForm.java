@@ -6,6 +6,7 @@ import com.del.ministry.db.Building;
 import com.del.ministry.db.District;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
+import com.del.ministry.utils.StringUtil;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.BuildingFilter;
@@ -18,20 +19,32 @@ import com.jgoodies.forms.factories.Paddings;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.List;
 import java.util.Vector;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class AddAddressIForm extends ObservableIFrame {
 
     private District district;
+    private List<DistrictAddAddress> addressList;
 
     private JTextField maskF;
     private JList<DistrictAddAddress> districtAddAddressF;
     private JComboBox<Integer> doorsF;
     private JComboBox<AddressTypeItem> typeF;
     private JButton addBtn;
+
+    private final Predicate<DistrictAddAddress> FILTER = new Predicate<DistrictAddAddress>() {
+        @Override
+        public boolean test(DistrictAddAddress item) {
+            return StringUtil.isTrimmedEmpty(maskF.getText()) ||
+                    item.toString().toLowerCase().trim().contains(maskF.getText().trim().toLowerCase());
+        }
+    };
 
     /**
      * Create the frame.
@@ -65,28 +78,45 @@ public class AddAddressIForm extends ObservableIFrame {
 
         districtAddAddressF.addListSelectionListener(e -> initDoors());
 
-        addBtn.addActionListener(e -> {
-            int selectedIndex = districtAddAddressF.getSelectedIndex();
-            if (selectedIndex > -1) {
-                DistrictAddAddress selectedValue = districtAddAddressF.getSelectedValue();
-                Integer door = doorsF.getItemAt(doorsF.getSelectedIndex());
-                DistrictAddress da = new DistrictAddress();
-                da.setBuilding(selectedValue.getBuilding());
-                da.setDistrict(getDistrict());
-                da.setType(typeF.getItemAt(typeF.getSelectedIndex()).getAddressType());
-                da.setNumber(door);
-                try {
-                    ServiceManager.getInstance().createDistrictAddress(da);
-                    initDoors();
-                    notifyObservers();
-                } catch (Exception e1) {
-                    MainFrame.setStatusError("Не удалось привязить адрес", e1);
-                }
+
+        maskF.addKeyListener(new KeyListener() {
+            public void keyPressed(KeyEvent keyEvent) {
+                //
+            }
+
+            public void keyReleased(KeyEvent keyEvent) {
+                filterAddressList();
+            }
+
+            public void keyTyped(KeyEvent keyEvent) {
+                //
             }
         });
 
+        addBtn.addActionListener(e -> add());
+
         init();
         pack();
+    }
+
+    private void add() {
+        int selectedIndex = districtAddAddressF.getSelectedIndex();
+        if (selectedIndex > -1) {
+            DistrictAddAddress selectedValue = districtAddAddressF.getSelectedValue();
+            Integer door = doorsF.getItemAt(doorsF.getSelectedIndex());
+            DistrictAddress da = new DistrictAddress();
+            da.setBuilding(selectedValue.getBuilding());
+            da.setDistrict(getDistrict());
+            da.setType(typeF.getItemAt(typeF.getSelectedIndex()).getAddressType());
+            da.setNumber(door);
+            try {
+                ServiceManager.getInstance().createDistrictAddress(da);
+                initDoors();
+                notifyObservers();
+            } catch (Exception e1) {
+                MainFrame.setStatusError("Не удалось привязить адрес", e1);
+            }
+        }
     }
 
     private void init() {
@@ -123,13 +153,18 @@ public class AddAddressIForm extends ObservableIFrame {
         return district;
     }
 
+    private void filterAddressList() {
+        LinkedListModel<DistrictAddAddress> model = addressList.stream().filter(FILTER).collect(Collectors.toCollection(LinkedListModel::new));
+        districtAddAddressF.setModel(model);
+    }
+
     public void setDistrict(District district) {
         this.district = district;
         setTitle("Редактировать участок '" + district.getNumber() + "'");
         try {
             List<Building> buildings = ServiceManager.getInstance().findBuildings(BuildingFilter.EMPTY);
-            LinkedListModel<DistrictAddAddress> model = buildings.stream().map(DistrictAddAddress::new).collect(Collectors.toCollection(LinkedListModel::new));
-            districtAddAddressF.setModel(model);
+            addressList = buildings.stream().map(DistrictAddAddress::new).collect(Collectors.toList());
+            filterAddressList();
         } catch (Exception e) {
             MainFrame.setStatusError("Нет доступа к адресам", e);
         }

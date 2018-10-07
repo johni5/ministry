@@ -55,23 +55,24 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
         generateBtn = new JButton("Заполнить");
         newBtn = new JButton("Новый");
         changeBtn = new JButton("Переименовать");
-        districtSize = new JLabel("0");
+        districtSize = new JLabel();
         districtSize.setHorizontalAlignment(SwingConstants.CENTER);
+        printSize(0);
 
         deleteAddressBtn.setEnabled(false);
 
         panel.add(FormBuilder.create().
-                        columns("50, 5, 80, 5, 50, 5, 120, 5, 100")
-                        .rows("p, 5, p, 5, p, 5, p, 5, p, 5, p, p")
+                        columns("50, 5, 80, 5, 50, 5, 100, 120, 5, 100")
+                        .rows("p, 5, p, 5, p, 5, p, 5, p, 100, 5, p, p")
                         .padding(Paddings.DIALOG)
-                        .add("Участок:").xy(1, 1).add(districtNumbersF).xy(3, 1).add(districtSize).xy(5, 1).add(deleteBtn).xy(9, 1)
-                        .addSeparator("Адреса").xyw(1, 3, 9)
-                        .add(districtAddressF).xywh(1, 5, 7, 5)
-                        .add(addBtn).xy(9, 5)
-                        .add(deleteAddressBtn).xy(9, 7)
-                        .add(generateBtn).xy(9, 9)
-                        .addSeparator("Создать").xyw(1, 11, 9)
-                        .add(newDistrictNumberF).xyw(1, 12, 3).add(changeBtn).xy(7, 12).add(newBtn).xy(9, 12)
+                        .add("Участок:").xy(1, 1).add(districtNumbersF).xy(3, 1).add(districtSize).xy(5, 1).add(deleteBtn).xy(10, 1)
+                        .addSeparator("Адреса").xyw(1, 3, 10)
+                        .add(districtAddressF).xywh(1, 5, 8, 6)
+                        .add(addBtn).xy(10, 5)
+                        .add(deleteAddressBtn).xy(10, 7)
+                        .add(generateBtn).xy(10, 9)
+                        .addSeparator("Редактор").xyw(1, 12, 10)
+                        .add(newDistrictNumberF).xyw(1, 13, 3).add(changeBtn).xy(8, 13).add(newBtn).xy(10, 13)
                         .build(),
                 BorderLayout.CENTER);
 
@@ -194,11 +195,15 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 List<DistrictAddressItem> collect = addresses.stream().
                         map(DistrictAddressItem::new).sorted().collect(Collectors.toList());
                 districtAddressF.setModel(new LinkedListModel<DistrictAddressItem>(collect));
-                districtSize.setText(String.valueOf(collect.size()));
+                printSize(collect.size());
             } catch (Exception e) {
                 MainFrame.setStatusError("Нет доступа к адресам участка", e);
             }
         }
+    }
+
+    private void printSize(int size) {
+        districtSize.setText(" " + size);
     }
 
     @Override
