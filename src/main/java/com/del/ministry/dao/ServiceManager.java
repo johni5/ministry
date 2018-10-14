@@ -195,6 +195,24 @@ public class ServiceManager {
         return getProvider().getAppointmentDAO().findAll();
     }
 
+    /*PUBLISHER*/
+
+    public void createPublisher(Publisher item) throws CommonException {
+        getProvider().getPublisherDAO().createAndCommit(item);
+    }
+
+    public void updatePublisher(Publisher item) throws CommonException {
+        getProvider().getPublisherDAO().updateAndCommit(item);
+    }
+
+    public void deletePublisher(Long id) throws CommonException {
+        getProvider().getPublisherDAO().removeAndCommit(id);
+    }
+
+    public List<Publisher> findPublishers() throws CommonException {
+        return getProvider().getPublisherDAO().findAll();
+    }
+
     /*BUILDING*/
 
     public void createBuilding(Building item) throws CommonException {
@@ -211,6 +229,10 @@ public class ServiceManager {
 
     public List<Building> findBuildings(BuildingFilter filter) throws CommonException {
         return getProvider().getBuildingDAO().findAll(filter);
+    }
+
+    public int countAvailableBuildings(List<Long> areas) throws CommonException {
+        return getProvider().getBuildingDAO().countAvailable(areas);
     }
 
     public int getMaxFloor(List<Long> areas) throws CommonException {

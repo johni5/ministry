@@ -50,7 +50,8 @@ public class AddAddressIForm extends ObservableIFrame {
      * Create the frame.
      */
     public AddAddressIForm() {
-        super("Редактировать участок", false, true, false, true);
+        super("Редактировать участок", true, true, true, true);
+        setMinimumSize(new Dimension(500, 200));
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -65,12 +66,11 @@ public class AddAddressIForm extends ObservableIFrame {
         addBtn.setEnabled(false);
 
         panel.add(FormBuilder.create().
-                        columns("50, 5, 200, 5, 80, 5, 120")
-                        .rows("p, 5, p, 5, p, 5, p")
+                        columns("50, 5, pref:grow, 5, 80, 5, 120")
+                        .rows("p, 5, p, 5, p, fill:0:grow, p")
                         .padding(Paddings.DIALOG)
                         .add("Поиск:").xy(1, 1).add(maskF).xyw(3, 1, 5)
-                        .add(districtAddAddressF).xywh(1, 3, 3, 5)
-                        .add("Дверь").xy(5, 3).add(doorsF).xy(7, 3)
+                        .add(districtAddAddressF).xywh(1, 3, 3, 5).add("Дверь").xy(5, 3).add(doorsF).xy(7, 3)
                         .add("Тип").xy(5, 5).add(typeF).xy(7, 5)
                         .add(addBtn).xy(7, 7)
                         .build(),

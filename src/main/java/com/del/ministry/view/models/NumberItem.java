@@ -4,7 +4,6 @@ package com.del.ministry.view.models;
  * Created by DodolinEL
  * date: 03.10.2018
  */
-// todo DodolinEL created
 public class NumberItem {
 
     private Number number;

@@ -13,20 +13,18 @@ public class Launcher {
     public static MainFrame mainFrame;
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    UIManager.setLookAndFeel(UIManager.
-                            getSystemLookAndFeelClassName());
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-                JFrame.setDefaultLookAndFeelDecorated(true);
-                mainFrame = new MainFrame();
-                mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
-                mainFrame.setVisible(true);
-                MainFrame.setStatusText("Идет загрузка, подождите...");
+        SwingUtilities.invokeLater(() -> {
+            try {
+                UIManager.setLookAndFeel(UIManager.
+                        getSystemLookAndFeelClassName());
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
             }
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            mainFrame = new MainFrame();
+            mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+            mainFrame.setVisible(true);
+            MainFrame.setStatusText("Идет загрузка, подождите...");
         });
     }
 

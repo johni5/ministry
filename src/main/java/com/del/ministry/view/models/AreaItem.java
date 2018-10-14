@@ -6,7 +6,6 @@ import com.del.ministry.db.Area;
  * Created by DodolinEL
  * date: 26.09.2018
  */
-// todo DodolinEL modified
 public class AreaItem implements Comparable<AreaItem> {
 
     private Area area;

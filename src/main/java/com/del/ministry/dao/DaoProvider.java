@@ -24,6 +24,10 @@ public class DaoProvider {
         return lookup(AppointmentDAO.class);
     }
 
+    public PublisherDAO getPublisherDAO() throws CommonException {
+        return lookup(PublisherDAO.class);
+    }
+
     public AreaDAO getAreaDAO() throws CommonException {
         return lookup(AreaDAO.class);
     }

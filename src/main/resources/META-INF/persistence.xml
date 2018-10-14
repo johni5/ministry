@@ -9,6 +9,7 @@
     <persistence-unit name="ministry">
         <class>com.del.ministry.db.AddressType</class>
         <class>com.del.ministry.db.Appointment</class>
+        <class>com.del.ministry.db.Publisher</class>
         <class>com.del.ministry.db.Area</class>
         <class>com.del.ministry.db.Building</class>
         <class>com.del.ministry.db.BuildingType</class>

@@ -11,7 +11,6 @@ import java.util.Vector;
  * Created by DodolinEL
  * date: 03.10.2018
  */
-// todo DodolinEL created
 public class SelectItemsModel<E> extends AbstractListModel<E> implements MutableComboBoxModel<E>, Serializable {
 
     private List<E> objects;

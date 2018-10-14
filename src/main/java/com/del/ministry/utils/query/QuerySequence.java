@@ -12,7 +12,6 @@ import java.util.Map;
  * <p/>
  * Запрос SQL или HQL
  */
-// todo DodolinEL add package com.del.ministry.utils.query
 public class QuerySequence {
 
     private List<QueryGroup> groups = Lists.newArrayList();

@@ -14,7 +14,7 @@ import com.del.ministry.view.models.SelectItemsModel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jgoodies.common.collect.LinkedListModel;
+import com.jgoodies.common.base.Objects;
 import com.jgoodies.forms.builder.FormBuilder;
 import com.jgoodies.forms.factories.Paddings;
 
@@ -37,17 +37,20 @@ public class GenerateAddressIForm extends ObservableIFrame {
     private JComboBox<NumberItem> maxFloorF;
     private JComboBox<NumberItem> intervalF;
     private JButton makeBtn;
+    private JLabel buildingsL;
 
     /**
      * Create the frame.
      */
     public GenerateAddressIForm() {
-        super("Заполнение участка случайными адресами", false, true, false, true);
+        super("Заполнение участка случайными адресами", true, true, true, true);
+        setMinimumSize(new Dimension(550, 200));
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
         panel.setLayout(new BorderLayout(0, 0));
 
+        buildingsL = new JLabel("");
         maxDoorsF = new JSpinner(new SpinnerNumberModel(70, 1, 200, 1));
         maxFloorF = new JComboBox<>();
         List<NumberItem> items = Stream.of(10, 20, 30, 40, 50, 60, 70).
@@ -64,25 +67,27 @@ public class GenerateAddressIForm extends ObservableIFrame {
         areaListF = new JList<>();
         areaListF.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         areaListF.addListSelectionListener(e -> initMaxFloors());
+        areaListF.addListSelectionListener(e -> initBuildingsCount());
 
         makeBtn = new JButton("Заполнить");
         makeBtn.addActionListener(e -> generate());
 
         panel.add(FormBuilder.create().
-                        columns("250, 5, 100, 5, 120")
-                        .rows("p, 5, p, 5, p, 5, p, 5, p")
+                        columns("250:grow, 5, 100, 5, 120")
+                        .rows("p, 5, p, 5, p, 5, p, fill:0:grow, 5, p")
                         .padding(Paddings.DIALOG)
                         .add("Укажите районы").xy(1, 1).add("Квартир").xy(3, 1).add(maxDoorsF).xy(5, 1)
-                        .add(areaListF).xywh(1, 3, 1, 5)
+                        .add(areaListF).xywh(1, 3, 1, 6)
                         .add("Этажей").xy(3, 3).add(maxFloorF).xy(5, 3)
                         .add("Расброс").xy(3, 5).add(intervalF).xy(5, 5)
                         .add("Плотность").xy(3, 7).add(doorsPerBuildingF).xy(5, 7)
-                        .add(makeBtn).xyw(3, 9, 3)
+                        .add(buildingsL).xy(1, 10).add(makeBtn).xyw(3, 10, 3)
                         .build(),
                 BorderLayout.CENTER);
 
         initAreaList();
         initMaxFloors();
+        initBuildingsCount();
 
         pack();
     }
@@ -105,7 +110,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
     private void initAreaList() {
         try {
             List<Area> areas = ServiceManager.getInstance().findAreas();
-            areaListF.setModel(new LinkedListModel<AreaItem>(areas.stream().map(AreaItem::new).sorted().collect(Collectors.toList())));
+            areaListF.setModel(new SelectItemsModel<AreaItem>(areas.stream().map(AreaItem::new).sorted().collect(Collectors.toList())));
         } catch (Exception e) {
             MainFrame.setStatusError("Ошибка получения данных!", e);
         }
@@ -131,6 +136,10 @@ public class GenerateAddressIForm extends ObservableIFrame {
                     filter(building -> building.getDoors() > usedDoorsAtAll.get(building.getId()).size()).
                     sorted(Comparator.comparingInt(o -> usedDoorsAtAll.get(o.getId()).size())).
                     collect(Collectors.toList());
+            if (ListUtil.isEmpty(readyBuildings)) {
+                MainFrame.setStatusError("Нет свободных адресов!");
+                return;
+            }
             NumberItem manualMaxFloors = maxFloorF.getItemAt(maxFloorF.getSelectedIndex());
             NumberItem manualMaxDoors = doorsPerBuildingF.getItemAt(doorsPerBuildingF.getSelectedIndex());
             int ready = 0;
@@ -180,7 +189,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
             }
 
             if (ready > 0) {
-                MainFrame.setStatusText("К участку было привязано " + ready + " адресов");
+                MainFrame.setStatusText("К участку было привязано адресов: " + ready);
                 notifyObservers();
             } else MainFrame.setStatusError("Не был привязан ни один адрес");
 
@@ -188,6 +197,18 @@ public class GenerateAddressIForm extends ObservableIFrame {
             MainFrame.setStatusError("Ошибка получения/сохранения данных!", e);
         }
 
+    }
+
+    private void initBuildingsCount() {
+        List<Long> areas = areaListF.getSelectedValuesList().
+                stream().map(areaItem -> areaItem.getArea().getId()).
+                collect(Collectors.toList());
+        try {
+            int count = ServiceManager.getInstance().countAvailableBuildings(areas);
+            buildingsL.setText("Доступно адресов: " + count);
+        } catch (CommonException e) {
+            MainFrame.setStatusError("Ошибка получения данных!", e);
+        }
     }
 
     public District getDistrict() {

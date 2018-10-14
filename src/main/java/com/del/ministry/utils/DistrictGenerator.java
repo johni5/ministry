@@ -9,7 +9,6 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 
-// todo DodolinEL changed
 public class DistrictGenerator {
 
 

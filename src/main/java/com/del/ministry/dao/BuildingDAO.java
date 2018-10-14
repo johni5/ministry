@@ -34,4 +34,18 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
                     getSingleResult(), 0);
         }
     }
+
+    public int countAvailable(List<Long> areas) {
+        QuerySequence where = new QuerySequence().and().inList("a.id", areas);
+        Query query = getManager().
+                createQuery("select count(b) " +
+                        "       from Building b " +
+                        "           inner join b.area a " +
+                        "       where " +
+                        "           b.doors > (select count(da) from DistrictAddress da where da.building.id=b.id) "
+                        + where.getQuery());
+        where.init(query);
+        return getInt(query.getSingleResult(), 0);
+
+    }
 }

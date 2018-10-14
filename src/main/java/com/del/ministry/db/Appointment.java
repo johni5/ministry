@@ -15,13 +15,13 @@ public class Appointment implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "DISTRICT_ID")
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "DISTRICT_ID", nullable = false)
     private District district;
 
-    @Basic(optional = false)
-    @Column(name = "OWNER", nullable = false)
-    private String owner;
+    @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.EAGER)
+    @JoinColumn(name = "PUBLISHER_ID", nullable = false)
+    private Publisher publisher;
 
     @Basic(optional = false)
     @Column(name = "ASSIGNED", nullable = false)
@@ -45,12 +45,12 @@ public class Appointment implements Serializable {
         this.id = id;
     }
 
-    public String getOwner() {
-        return owner;
+    public Publisher getPublisher() {
+        return publisher;
     }
 
-    public void setOwner(String name) {
-        this.owner = name;
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
     }
 
     public Date getAssigned() {

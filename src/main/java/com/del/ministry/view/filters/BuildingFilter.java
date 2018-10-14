@@ -6,7 +6,6 @@ import java.util.List;
  * Created by DodolinEL
  * date: 03.10.2018
  */
-// todo DodolinEL created
 public class BuildingFilter {
 
     public static final BuildingFilter EMPTY = new BuildingFilter();

@@ -4,6 +4,7 @@ import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.db.District;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
+import com.del.ministry.utils.StringUtil;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
@@ -38,7 +39,9 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
      * Create the frame.
      */
     public DistrictListIForm() {
-        super("Участки", false, true, false, true);
+        super("Участки", true, true, true, true);
+        setMinimumSize(new Dimension(600, 400));
+//        setMaximumSize(new Dimension(1000, 600));
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);
@@ -46,7 +49,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
 
         districtNumbersF = new JComboBox<>();
         districtAddressF = new JList<>();
-        districtAddressF.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        districtAddressF.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         newDistrictNumberF = new JTextField();
 
         addBtn = new JButton("Добавить");
@@ -62,8 +65,8 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
         deleteAddressBtn.setEnabled(false);
 
         panel.add(FormBuilder.create().
-                        columns("50, 5, 80, 5, 50, 5, 100, 120, 5, 100")
-                        .rows("p, 5, p, 5, p, 5, p, 5, p, 100, 5, p, p")
+                        columns("50, 5, 80, 5, 50, pref:grow, 100, 150, 5, 100")
+                        .rows("p, 5, p, 5, p, 5, p, 5, p, fill:100:grow, 5, p, p")
                         .padding(Paddings.DIALOG)
                         .add("Участок:").xy(1, 1).add(districtNumbersF).xy(3, 1).add(districtSize).xy(5, 1).add(deleteBtn).xy(10, 1)
                         .addSeparator("Адреса").xyw(1, 3, 10)
@@ -110,19 +113,21 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
     }
 
     private void renameDistrict() {
-        DistrictNumbers selectedItem = districtNumbersF.getItemAt(districtNumbersF.getSelectedIndex());
-        String number = newDistrictNumberF.getText();
-        if (number != null) {
-            District district = selectedItem.getDistrict();
-            district.setNumber(number);
-            try {
-                ServiceManager.getInstance().updateDistrict(district);
-                MainFrame.setStatusText("Участок успешно переименован");
-            } catch (Exception e) {
-                MainFrame.setStatusError("Невозможно переименовать участок!", e);
-            } finally {
-                initDistrictList(district.getId());
-                newDistrictNumberF.setText("");
+        if (districtNumbersF.getSelectedIndex() > -1) {
+            DistrictNumbers selectedItem = districtNumbersF.getItemAt(districtNumbersF.getSelectedIndex());
+            String number = newDistrictNumberF.getText();
+            if (!StringUtil.isTrimmedEmpty(number)) {
+                District district = selectedItem.getDistrict();
+                district.setNumber(number);
+                try {
+                    ServiceManager.getInstance().updateDistrict(district);
+                    MainFrame.setStatusText("Участок успешно переименован");
+                } catch (Exception e) {
+                    MainFrame.setStatusError("Невозможно переименовать участок!", e);
+                } finally {
+                    initDistrictList(district.getId());
+                    newDistrictNumberF.setText("");
+                }
             }
         }
     }
@@ -145,7 +150,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
 
     private void newDistrict() {
         String number = newDistrictNumberF.getText();
-        if (number != null) {
+        if (!StringUtil.isTrimmedEmpty(number)) {
             try {
                 District d = new District();
                 d.setNumber(number);
@@ -160,12 +165,14 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
     }
 
     private void deleteAddress() {
-        try {
-            ServiceManager.getInstance().deleteDistrictAddress(districtAddressF.getSelectedValue().getAddress().getId());
-            initAddressList();
-        } catch (CommonException e1) {
-            MainFrame.setStatusError("Невозможно удалить адрес", e1);
-        }
+        districtAddressF.getSelectedValuesList().forEach(item -> {
+            try {
+                ServiceManager.getInstance().deleteDistrictAddress(item.getAddress().getId());
+            } catch (CommonException e) {
+                MainFrame.setStatusError("Невозможно удалить адрес", e);
+            }
+        });
+        initAddressList();
     }
 
     private void initDistrictList() {
