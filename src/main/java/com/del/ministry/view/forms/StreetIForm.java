@@ -95,45 +95,21 @@ public class StreetIForm extends ObservableIFrame {
         table.getColumnModel().getColumn(1).setPreferredWidth(400);
         table.getColumnModel().getColumn(2).setPreferredWidth(100);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                deleteButton.setEnabled(true);
-            }
-        });
-
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                streetTableModel.removeItems(table.getSelectedRows());
-            }
-        });
-        commitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                streetTableModel.commitChanges();
-            }
-        });
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                streetTableModel.refresh();
-            }
-        });
-        btnNewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = textField.getText();
-                if (!Utils.isTrimmedEmpty(name)) {
-                    Street item = new Street();
-                    item.setName(name);
-                    try {
-                        ServiceManager.getInstance().createStreet(item);
-                        textField.setText("");
-                        streetTableModel.refresh();
-                    } catch (CommonException e1) {
-                        Utils.getLogger().error(e1.getMessage(), e1);
-                    }
+        table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
+        deleteButton.addActionListener(e -> streetTableModel.removeItems(table.getSelectedRows()));
+        commitButton.addActionListener(e -> streetTableModel.commitChanges());
+        revertButton.addActionListener(e -> streetTableModel.refresh());
+        btnNewButton.addActionListener(e -> {
+            String name = textField.getText();
+            if (!Utils.isTrimmedEmpty(name)) {
+                Street item = new Street();
+                item.setName(name);
+                try {
+                    ServiceManager.getInstance().createStreet(item);
+                    textField.setText("");
+                    streetTableModel.refresh();
+                } catch (CommonException e1) {
+                    Utils.getLogger().error(e1.getMessage(), e1);
                 }
             }
         });

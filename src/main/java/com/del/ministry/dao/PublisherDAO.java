@@ -12,6 +12,6 @@ public class PublisherDAO extends AbstractDAO<Publisher, Long> {
     }
 
     public List<Publisher> findAll() {
-        return manager.createQuery("from Publisher ").getResultList();
+        return manager.createQuery("from Publisher order by lastName, firstName, secondName").getResultList();
     }
 }

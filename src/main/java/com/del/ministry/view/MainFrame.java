@@ -67,6 +67,7 @@ public class MainFrame extends JFrame {
         menu_2.add(menuItem_2_1);
         menu_2.add(menuItemPublishers);
         menuItem_2_1.addActionListener(new ShowIFrameActionListener<>(DistrictListIForm.class));
+        menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
 
         JMenu menuHelp = new JMenu("Помощь");
         JMenuItem menuItemAbout = new JMenuItem("О программе");
