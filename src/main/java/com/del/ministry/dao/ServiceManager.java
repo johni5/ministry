@@ -3,6 +3,7 @@ package com.del.ministry.dao;
 import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.view.filters.BuildingFilter;
+import com.del.ministry.view.models.tree.RootNode;
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
@@ -263,6 +264,10 @@ public class ServiceManager {
 
     public List<Integer> getUsedDoors(Long buildingId) throws CommonException {
         return getProvider().getDistrictAddressDAO().getUsedDoors(buildingId);
+    }
+
+    public RootNode getDistrictTree() throws CommonException {
+        return getProvider().getDistrictAddressDAO().getTree();
     }
 
 }

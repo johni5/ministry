@@ -5,6 +5,7 @@ import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DistrictGenerator;
 import com.del.ministry.utils.ListUtil;
+import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.BuildingFilter;
@@ -190,6 +191,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
 
             if (ready > 0) {
                 MainFrame.setStatusText("К участку было привязано адресов: " + ready);
+                Launcher.mainFrame.initLeftSideTree();
                 notifyObservers();
             } else MainFrame.setStatusError("Не был привязан ни один адрес");
 

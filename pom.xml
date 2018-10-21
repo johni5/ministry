@@ -11,7 +11,7 @@
     <name>ministry</name>
 
     <properties>
-        <version.info>1.0</version.info>
+        <version.info>1.01</version.info>
         <maven.build.timestamp.format>yyMMdd_HHmm</maven.build.timestamp.format>
         <version.date>${maven.build.timestamp}</version.date>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

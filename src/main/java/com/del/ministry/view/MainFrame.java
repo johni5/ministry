@@ -1,11 +1,13 @@
 package com.del.ministry.view;
 
+import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.actions.MainFrameActions;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.forms.*;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.awt.event.WindowEvent;
 
@@ -15,6 +17,7 @@ public class MainFrame extends JFrame {
 
     private JMenu menu_1;
     private JMenu menu_2;
+    private JTree leftSideTree;
 
     private final static JLabel STATUS_TEXT = new JLabel();
 
@@ -86,10 +89,40 @@ public class MainFrame extends JFrame {
 
         desktop.setBackground(Color.LIGHT_GRAY);
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
-        getContentPane().add(desktop, BorderLayout.CENTER);
+        JPanel leftSide = new JPanel(new BorderLayout());
+
+//        getContentPane().add(desktop, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
 
+//        getContentPane().add(leftSide, BorderLayout.WEST);
+        leftSideTree = new JTree();
+        leftSide.add(leftSideTree);
+
+        JSplitPane p = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
+        getContentPane().add(p, BorderLayout.CENTER);
+
         addWindowListener(new MainFrameActions(this));
+
+        initLeftSideTree();
+    }
+
+    public void initLeftSideTree() {
+        try {
+            DefaultTreeModel model = new DefaultTreeModel(ServiceManager.getInstance().getDistrictTree());
+            leftSideTree.setModel(model);
+            expandAllNodes(leftSideTree, 0, leftSideTree.getRowCount());
+        } catch (Exception e) {
+            setStatusError("Ошибка построения дерева участков", e);
+        }
+    }
+
+    private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
+        for (int i = startingIndex; i < rowCount; ++i) {
+            tree.expandRow(i);
+        }
+        if (tree.getRowCount() != rowCount) {
+            expandAllNodes(tree, rowCount, tree.getRowCount());
+        }
     }
 
     public void setStatusDB_ERROR() {

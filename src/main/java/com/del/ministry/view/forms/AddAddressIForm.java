@@ -7,6 +7,7 @@ import com.del.ministry.db.District;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.StringUtil;
+import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.BuildingFilter;
@@ -112,6 +113,7 @@ public class AddAddressIForm extends ObservableIFrame {
             try {
                 ServiceManager.getInstance().createDistrictAddress(da);
                 initDoors();
+                Launcher.mainFrame.initLeftSideTree();
                 notifyObservers();
             } catch (Exception e1) {
                 MainFrame.setStatusError("Не удалось привязить адрес", e1);

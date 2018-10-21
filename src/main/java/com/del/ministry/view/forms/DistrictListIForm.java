@@ -5,6 +5,7 @@ import com.del.ministry.db.District;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.StringUtil;
+import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
@@ -122,6 +123,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 try {
                     ServiceManager.getInstance().updateDistrict(district);
                     MainFrame.setStatusText("Участок успешно переименован");
+                    Launcher.mainFrame.initLeftSideTree();
                 } catch (Exception e) {
                     MainFrame.setStatusError("Невозможно переименовать участок!", e);
                 } finally {
@@ -140,6 +142,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 MainFrame.setStatusText("Запись удалена");
                 initDistrictList();
                 initAddressList();
+                Launcher.mainFrame.initLeftSideTree();
             } catch (CommonException e1) {
                 MainFrame.setStatusError(e1.getMessage(), e1);
             } catch (Exception e1) {
@@ -158,6 +161,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 MainFrame.setStatusText("Участок создан");
                 newDistrictNumberF.setText("");
                 initDistrictList();
+                Launcher.mainFrame.initLeftSideTree();
             } catch (Exception e1) {
                 MainFrame.setStatusError("Ошибка при сохранении участка", e1);
             }
