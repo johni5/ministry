@@ -2,7 +2,9 @@ package com.del.ministry.view;
 
 import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.utils.Utils;
+import com.del.ministry.view.actions.BackupAction;
 import com.del.ministry.view.actions.MainFrameActions;
+import com.del.ministry.view.actions.RestoreAction;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.forms.*;
 
@@ -38,7 +40,7 @@ public class MainFrame extends JFrame {
         menuItem.addActionListener(arg0 -> {
             if (JOptionPane.showConfirmDialog(MainFrame.this, "Вы действительно хотите выйти?", "Завершение работы",
                     JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                dispatchEvent(new WindowEvent(MainFrame.this, WindowEvent.WINDOW_CLOSING));
+                close();
             }
         });
         menu.add(menuItem);
@@ -72,6 +74,14 @@ public class MainFrame extends JFrame {
         menuItem_2_1.addActionListener(new ShowIFrameActionListener<>(DistrictListIForm.class));
         menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
 
+        JMenu menuService = new JMenu("Сервис");
+        JMenuItem menuItemRestore = new JMenuItem("Восстановление");
+        JMenuItem menuItemBackup = new JMenuItem("Резервное копирование");
+        menuItemBackup.addActionListener(new BackupAction());
+        menuItemRestore.addActionListener(new RestoreAction());
+        menuService.add(menuItemBackup);
+        menuService.add(menuItemRestore);
+
         JMenu menuHelp = new JMenu("Помощь");
         JMenuItem menuItemAbout = new JMenuItem("О программе");
         menuHelp.add(menuItemAbout);
@@ -80,6 +90,7 @@ public class MainFrame extends JFrame {
         menuBar.add(menu);
         menuBar.add(menu_1);
         menuBar.add(menu_2);
+        menuBar.add(menuService);
         menuBar.add(menuHelp);
 
         JPanel statusBar = new JPanel(new BorderLayout(0, 0));
@@ -91,10 +102,7 @@ public class MainFrame extends JFrame {
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JPanel leftSide = new JPanel(new BorderLayout());
 
-//        getContentPane().add(desktop, BorderLayout.CENTER);
         getContentPane().add(statusBar, BorderLayout.SOUTH);
-
-//        getContentPane().add(leftSide, BorderLayout.WEST);
         leftSideTree = new JTree();
         leftSide.add(leftSideTree);
 
@@ -148,6 +156,10 @@ public class MainFrame extends JFrame {
     public static void setStatusError(String message) {
         STATUS_TEXT.setText(message);
         STATUS_TEXT.setForeground(Color.RED);
+    }
+
+    public void close() {
+        dispatchEvent(new WindowEvent(MainFrame.this, WindowEvent.WINDOW_CLOSING));
     }
 
 }

@@ -5,6 +5,7 @@ import com.del.ministry.utils.CommonException;
 import com.del.ministry.view.filters.BuildingFilter;
 import com.del.ministry.view.models.tree.RootNode;
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -268,6 +269,29 @@ public class ServiceManager {
 
     public RootNode getDistrictTree() throws CommonException {
         return getProvider().getDistrictAddressDAO().getTree();
+    }
+
+    /*OTHER*/
+
+    public void backupData(String path, String pwd) {
+        String ext = ".back";
+        if (!path.endsWith(ext)) path = path + ext;
+        try (Session session = getEntityManager().unwrap(Session.class)) {
+            session.beginTransaction();
+            session.createSQLQuery("SCRIPT DROP TO :path COMPRESSION DEFLATE CIPHER AES PASSWORD :pwd " +
+                    "   TABLE ADDRESS_TYPE,BUILDING_TYPE,CITY,AREA,STREET,PUBLISHER,BUILDING,DISTRICT,DISTRICT_ADDRESS,APPOINTMENT").
+                    setParameter("path", path).setParameter("pwd", pwd).getResultList();
+            session.getTransaction().commit();
+        }
+    }
+
+    public void restoreData(String path, String pwd) {
+        try (Session session = getEntityManager().unwrap(Session.class)) {
+            session.beginTransaction();
+            session.createSQLQuery("RUNSCRIPT FROM :path COMPRESSION DEFLATE CIPHER AES PASSWORD :pwd").
+                    setParameter("path", path).setParameter("pwd", pwd).executeUpdate();
+            session.getTransaction().commit();
+        }
     }
 
 }
