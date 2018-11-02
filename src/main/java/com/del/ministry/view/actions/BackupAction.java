@@ -15,7 +15,7 @@ public class BackupAction implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         JFileChooser fc = new JFileChooser();
         fc.setMultiSelectionEnabled(false);
-        int result = fc.showOpenDialog(Launcher.mainFrame);
+        int result = fc.showSaveDialog(Launcher.mainFrame);
         if (JFileChooser.APPROVE_OPTION == result) {
             File selectedFile = fc.getSelectedFile();
             try {

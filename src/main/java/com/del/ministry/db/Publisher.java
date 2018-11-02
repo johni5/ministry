@@ -1,5 +1,6 @@
 package com.del.ministry.db;
 
+import com.del.ministry.utils.StringUtil;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -84,5 +85,37 @@ public class Publisher implements Serializable {
     public void setPioneer(Boolean pioneer) {
         this.pioneer = pioneer;
     }
+
+    public String getFIO() {
+        StringBuilder fio = new StringBuilder();
+        if (!StringUtil.isTrimmedEmpty(lastName)) {
+            fio.append(lastName);
+        }
+        if (!StringUtil.isTrimmedEmpty(firstName)) {
+            if (fio.length() > 0) fio.append(" ");
+            fio.append(firstName.trim().substring(0, 1).toUpperCase()).append(".");
+        }
+        if (!StringUtil.isTrimmedEmpty(secondName)) {
+            fio.append(secondName.trim().substring(0, 1).toUpperCase()).append(".");
+        }
+        return fio.toString();
+    }
+
+    public String getFullFIO() {
+        StringBuilder fio = new StringBuilder();
+        if (!StringUtil.isTrimmedEmpty(lastName)) {
+            fio.append(lastName.trim());
+        }
+        if (!StringUtil.isTrimmedEmpty(firstName)) {
+            if (fio.length() > 0) fio.append(" ");
+            fio.append(firstName.trim());
+        }
+        if (!StringUtil.isTrimmedEmpty(secondName)) {
+            if (fio.length() > 0) fio.append(" ");
+            fio.append(secondName.trim());
+        }
+        return fio.toString();
+    }
+
 }
 

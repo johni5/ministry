@@ -17,8 +17,14 @@ public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
     }
 
     public List<DistrictAddress> findByDistrictId(Long districtId) {
-        return manager.createQuery("select da from DistrictAddress da where da.district.id = :districtId ").
+        return manager.createQuery("select da from DistrictAddress da inner join da.building b " +
+                "where da.district.id = :districtId order by b.city.name, b.street.name, b.number, da.number ").
                 setParameter("districtId", districtId).getResultList();
+    }
+
+    public int sizeByDistrictId(Long districtId) {
+        return getInt(manager.createQuery("select count(da) from DistrictAddress da where da.district.id = :districtId ").
+                setParameter("districtId", districtId).getSingleResult(), 0);
     }
 
 

@@ -15,7 +15,6 @@ import com.del.ministry.view.models.SelectItemsModel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.jgoodies.common.base.Objects;
 import com.jgoodies.forms.builder.FormBuilder;
 import com.jgoodies.forms.factories.Paddings;
 
@@ -128,7 +127,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
         Map<Long, AtomicInteger> doorsCounter = Maps.newHashMap();
         try {
             AddressType defaultAddressType = serviceManager.getDefaultAddressType();
-            int districtSize = ListUtil.size(serviceManager.findDistrictAddresses(getDistrict().getId()));
+            int districtSize = serviceManager.getDistrictAddressesSize(getDistrict().getId());
             List<Building> buildings = serviceManager.findBuildings(filter);
             for (Building building : buildings) {
                 usedDoorsAtAll.put(building.getId(), serviceManager.getUsedDoors(building.getId()));

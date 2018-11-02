@@ -16,6 +16,17 @@ public class DistrictDAO extends AbstractDAO<District, Long> {
         return getManager().createQuery("select d from District d order by d.number").getResultList();
     }
 
+    public List<District> findFree() {
+        return getManager().createQuery("select d from District d where d.id not in " +
+                " (select a.district.id from Appointment a where a.completed is null) order by d.number").
+                getResultList();
+    }
+
+    public boolean allowEditDistrict(Long districtId) {
+        return getLong(getManager().createQuery("select count(a) from Appointment a where a.district.id=:districtId and a.completed is null").
+                setParameter("districtId", districtId).getSingleResult(), 0L) == 0;
+    }
+
     public void checkAndRemove(Long districtId) throws CommonException {
         Integer count = getInt(getManager().
                 createQuery("select count(a) from Appointment a where a.district.id=:districtId").

@@ -171,7 +171,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
     private void deleteAddress() {
         districtAddressF.getSelectedValuesList().forEach(item -> {
             try {
-                ServiceManager.getInstance().deleteDistrictAddress(item.getAddress().getId());
+                ServiceManager.getInstance().deleteDistrictAddress(item.getAddress());
             } catch (CommonException e) {
                 MainFrame.setStatusError("Невозможно удалить адрес", e);
             }

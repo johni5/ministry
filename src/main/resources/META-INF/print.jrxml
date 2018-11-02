@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="print" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="62ae1e06-0d28-4b3c-bfc1-e0d374a4f2a2">
+	<property name="ireport.zoom" value="1.7715610000000013"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="Base" isDefault="true" fontName="Arial" fontSize="14" pdfEncoding="Cp1251"/>
+	<style name="title" style="Base" mode="Opaque" backcolor="#CCCCCC" fill="Solid" isBold="true">
+		<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+		<paragraph rightIndent="5"/>
+	</style>
+	<style name="Row" style="Base" mode="Opaque" backcolor="#FFFFFF" vAlign="Middle">
+		<box topPadding="2" bottomPadding="2"/>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[!$V{oddRow}]]></conditionExpression>
+			<style mode="Opaque" backcolor="#E3E3E3"/>
+		</conditionalStyle>
+	</style>
+	<style name="Footer" style="Base" fontSize="10"/>
+	<style name="Paging" style="Base" vAlign="Middle" fontSize="8" isBold="false" isItalic="true"/>
+	<parameter name="publisher" class="java.lang.String"/>
+	<parameter name="districtNumber" class="java.lang.String"/>
+	<parameter name="assigned" class="java.util.Date"/>
+	<field name="number" class="java.lang.Integer"/>
+	<field name="address" class="java.lang.String"/>
+	<variable name="oddRow" class="java.lang.Boolean">
+		<variableExpression><![CDATA[$F{number}%2==0]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="50" splitType="Stretch">
+			<textField isStretchWithOverflow="true">
+				<reportElement style="title" stretchType="RelativeToBandHeight" x="0" y="0" width="555" height="30" uuid="7dc89f0f-fcc8-41f4-81b4-a3ab311a3881"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{districtNumber}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="20" uuid="142d563a-b704-4c97-885c-83118e62d79e"/>
+				<textElement>
+					<font size="12" isItalic="true"/>
+				</textElement>
+				<text><![CDATA[Список адресов:]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToBandHeight" x="0" y="0" width="50" height="24" uuid="4e5a6db2-79c4-4d1c-80c7-ccdee49d0b6b"/>
+				<textFieldExpression><![CDATA[$F{number}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" isBlankWhenNull="true">
+				<reportElement style="Row" stretchType="RelativeToBandHeight" x="50" y="0" width="505" height="24" uuid="d4b111d0-e2f8-4d05-b3c8-56d0a28b0239"/>
+				<textFieldExpression><![CDATA[$F{address}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement style="Paging" x="355" y="30" width="126" height="20" uuid="b2fd0e82-eb8c-4cee-aba8-2ee098c005bf"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Страница "+$V{PAGE_NUMBER}+" из "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Paging" x="481" y="30" width="74" height="20" uuid="37ba5f95-fd6f-4ef5-b934-675fcc0f566b"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="30" width="555" height="1" uuid="8b9bf8a4-f960-4dcb-8633-e4ad1650d7ee"/>
+			</line>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="50">
+			<textField>
+				<reportElement style="Footer" x="0" y="0" width="355" height="20" uuid="7f664937-a795-45ef-9645-0cb54ca6f150"/>
+				<textFieldExpression><![CDATA[$P{publisher}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+				<reportElement style="Footer" x="355" y="0" width="200" height="20" uuid="cb7cb037-10d2-4a31-ad59-a2bdbfe4540c"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$P{assigned}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement style="Paging" x="355" y="30" width="126" height="20" uuid="6af9a482-00e1-45f8-bde8-5444cd330ec6"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Страница "+$V{PAGE_NUMBER}+" из "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Paging" x="481" y="30" width="74" height="20" uuid="52218139-7349-4749-aad0-7bd00b0fdd38"/>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="31" width="555" height="1" uuid="b05a2fc2-86bc-4538-b0ce-11fc54190092"/>
+			</line>
+		</band>
+	</lastPageFooter>
+</jasperReport>

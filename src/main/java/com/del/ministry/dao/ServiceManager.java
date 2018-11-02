@@ -2,6 +2,8 @@ package com.del.ministry.dao;
 
 import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
+import com.del.ministry.utils.Utils;
+import com.del.ministry.view.filters.AppointmentsFilter;
 import com.del.ministry.view.filters.BuildingFilter;
 import com.del.ministry.view.models.tree.RootNode;
 import org.apache.log4j.Logger;
@@ -74,15 +76,21 @@ public class ServiceManager {
     }
 
     public void updateDistrict(District district) throws CommonException {
+        requireNonAppointed(district.getId());
         getProvider().getDistrictDAO().updateAndCommit(district);
     }
 
     public void deleteDistrict(Long id) throws CommonException {
+        requireNonAppointed(id);
         getProvider().getDistrictDAO().checkAndRemove(id);
     }
 
     public List<District> allDistricts() throws CommonException {
         return getProvider().getDistrictDAO().findAll();
+    }
+
+    public List<District> freeDistricts() throws CommonException {
+        return getProvider().getDistrictDAO().findFree();
     }
 
     /*AREA*/
@@ -193,8 +201,8 @@ public class ServiceManager {
         getProvider().getAppointmentDAO().removeAndCommit(id);
     }
 
-    public List<Appointment> findAppointments() throws CommonException {
-        return getProvider().getAppointmentDAO().findAll();
+    public List<Appointment> findAppointments(AppointmentsFilter filter) throws CommonException {
+        return getProvider().getAppointmentDAO().find(filter);
     }
 
     /*PUBLISHER*/
@@ -244,6 +252,7 @@ public class ServiceManager {
     /*DISTRICT ADDRESS*/
 
     public void createDistrictAddress(DistrictAddress item) throws CommonException {
+        requireNonAppointed(item.getDistrict().getId());
         getProvider().getDistrictAddressDAO().createAndCommit(item);
     }
 
@@ -251,8 +260,9 @@ public class ServiceManager {
         getProvider().getDistrictAddressDAO().updateAndCommit(item);
     }
 
-    public void deleteDistrictAddress(Long id) throws CommonException {
-        getProvider().getDistrictAddressDAO().removeAndCommit(id);
+    public void deleteDistrictAddress(DistrictAddress districtAddress) throws CommonException {
+        requireNonAppointed(districtAddress.getDistrict().getId());
+        getProvider().getDistrictAddressDAO().removeAndCommit(districtAddress.getId());
     }
 
     public List<DistrictAddress> allDistrictAddresses() throws CommonException {
@@ -263,12 +273,22 @@ public class ServiceManager {
         return getProvider().getDistrictAddressDAO().findByDistrictId(districtId);
     }
 
+    public int getDistrictAddressesSize(Long districtId) throws CommonException {
+        return getProvider().getDistrictAddressDAO().sizeByDistrictId(districtId);
+    }
+
     public List<Integer> getUsedDoors(Long buildingId) throws CommonException {
         return getProvider().getDistrictAddressDAO().getUsedDoors(buildingId);
     }
 
     public RootNode getDistrictTree() throws CommonException {
         return getProvider().getDistrictAddressDAO().getTree();
+    }
+
+    private void requireNonAppointed(Long districtId) throws CommonException {
+        if (Utils.nvl(districtId, 0L) > 0 && !getProvider().getDistrictDAO().allowEditDistrict(districtId)) {
+            throw new CommonException("Участок назначен, редактирование невозможно!");
+        }
     }
 
     /*OTHER*/

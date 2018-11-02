@@ -3,10 +3,12 @@ package com.del.ministry.view.forms;
 import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.CommonException;
+import com.del.ministry.utils.DateUtilz;
 import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.models.YesNoList;
+import com.del.ministry.view.models.table.ReadOnlyTableModel;
 import com.github.lgooddatepicker.components.DatePicker;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.google.common.collect.Maps;
@@ -18,14 +20,11 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.Map;
 
 public class PublishersIForm extends ObservableIFrame {
 
     private JTable table;
-    private static final SimpleDateFormat SDF = new SimpleDateFormat("dd/MM/yyyy");
 
     public PublishersIForm() {
         super("Возвещатели", true, true, true, true);
@@ -96,8 +95,8 @@ public class PublishersIForm extends ObservableIFrame {
         JTextField secondNameF = new JTextField();
         JTextField lastNameF = new JTextField();
         DatePickerSettings s = new DatePickerSettings();
-        DatePicker dp = new DatePicker(s);
         s.setFormatForDatesCommonEra("dd/MM/yyyy");
+        DatePicker dp = new DatePicker(s);
         JComboBox<YesNoList> pioneerF = new JComboBox<>(YesNoList.LIST);
         JPanel buttons = new JPanel();
 
@@ -105,7 +104,7 @@ public class PublishersIForm extends ObservableIFrame {
             firstNameF.setText(publisher.getFirstName());
             secondNameF.setText(publisher.getSecondName());
             lastNameF.setText(publisher.getLastName());
-            dp.setDate(new Date(publisher.getBirthDay().getTime()).toLocalDate());
+            dp.setDate(DateUtilz.toLocalDate(publisher.getBirthDay()));
             pioneerF.setSelectedItem(publisher.getPioneer() ? YesNoList.YES : YesNoList.NO);
         }
 
@@ -115,7 +114,7 @@ public class PublishersIForm extends ObservableIFrame {
             p.setFirstName(firstNameF.getText());
             p.setSecondName(secondNameF.getText());
             p.setLastName(lastNameF.getText());
-            p.setBirthDay(Date.valueOf(dp.getDate()));
+            p.setBirthDay(DateUtilz.fromLocalDate(dp.getDate()));
             p.setPioneer(pioneerF.getItemAt(pioneerF.getSelectedIndex()).isYes());
             try {
                 if (publisher == null) {
@@ -159,7 +158,7 @@ public class PublishersIForm extends ObservableIFrame {
 
     private void initTable() {
         try {
-            DefaultTableModel tableModel = new DefaultTableModel(new Object[][]{}, new Object[]{"Фамилия", "Имя", "Отчество", "Дата рождения", "Пионер"});
+            DefaultTableModel tableModel = new ReadOnlyTableModel(new Object[][]{}, new Object[]{"Фамилия", "Имя", "Отчество", "Дата рождения", "Пионер"});
             publishers = Maps.newHashMap();
             ServiceManager.getInstance().findPublishers().forEach(p -> {
                 publishers.put(tableModel.getRowCount(), p);
@@ -167,7 +166,7 @@ public class PublishersIForm extends ObservableIFrame {
                         p.getLastName(),
                         p.getFirstName(),
                         p.getSecondName(),
-                        SDF.format(p.getBirthDay()),
+                        DateUtilz.formatDate(p.getBirthDay()),
                         Boolean.TRUE.equals(p.getPioneer()) ? "Да" : "Нет"
                 });
             });

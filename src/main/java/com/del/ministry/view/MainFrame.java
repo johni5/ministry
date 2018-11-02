@@ -17,8 +17,8 @@ public class MainFrame extends JFrame {
 
     public final JDesktopPane desktop = new JDesktopPane();
 
-    private JMenu menu_1;
-    private JMenu menu_2;
+    private JMenu menuTerritory;
+    private JMenu menuMinistry;
     private JTree leftSideTree;
 
     private final static JLabel STATUS_TEXT = new JLabel();
@@ -45,20 +45,20 @@ public class MainFrame extends JFrame {
         });
         menu.add(menuItem);
 
-        menu_1 = new JMenu("Территория");
+        menuTerritory = new JMenu("Территория");
         JMenuItem menuItem_2 = new JMenuItem("Район");
         JMenuItem menuItem_1 = new JMenuItem("Улица");
         JMenuItem menuItem_3 = new JMenuItem("Населенный пункт");
         JMenuItem menuItem_4 = new JMenuItem("Дом");
         JMenuItem menuItem_5 = new JMenuItem("Тип адреса");
         JMenuItem menuItem_6 = new JMenuItem("Тип дома");
-        menu_1.add(menuItem_2);
-        menu_1.add(menuItem_1);
-        menu_1.add(menuItem_3);
-        menu_1.add(menuItem_4);
-        menu_1.add(new JSeparator());
-        menu_1.add(menuItem_5);
-        menu_1.add(menuItem_6);
+        menuTerritory.add(menuItem_2);
+        menuTerritory.add(menuItem_1);
+        menuTerritory.add(menuItem_3);
+        menuTerritory.add(menuItem_4);
+        menuTerritory.add(new JSeparator());
+        menuTerritory.add(menuItem_5);
+        menuTerritory.add(menuItem_6);
         menuItem_2.addActionListener(new ShowIFrameActionListener<>(AreaIForm.class));
         menuItem_1.addActionListener(new ShowIFrameActionListener<>(StreetIForm.class));
         menuItem_3.addActionListener(new ShowIFrameActionListener<>(CityIForm.class));
@@ -66,13 +66,16 @@ public class MainFrame extends JFrame {
         menuItem_5.addActionListener(new ShowIFrameActionListener<>(AddressTypeIForm.class));
         menuItem_6.addActionListener(new ShowIFrameActionListener<>(BuildingTypeIForm.class));
 
-        menu_2 = new JMenu("Служение");
+        menuMinistry = new JMenu("Служение");
         JMenuItem menuItem_2_1 = new JMenuItem("Участки");
         JMenuItem menuItemPublishers = new JMenuItem("Возвещатели");
-        menu_2.add(menuItem_2_1);
-        menu_2.add(menuItemPublishers);
+        JMenuItem menuItemAppointments = new JMenuItem("Назначения участков");
+        menuMinistry.add(menuItem_2_1);
+        menuMinistry.add(menuItemPublishers);
+        menuMinistry.add(menuItemAppointments);
         menuItem_2_1.addActionListener(new ShowIFrameActionListener<>(DistrictListIForm.class));
         menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
+        menuItemAppointments.addActionListener(new ShowIFrameActionListener<>(AppointmentsIForm.class));
 
         JMenu menuService = new JMenu("Сервис");
         JMenuItem menuItemRestore = new JMenuItem("Восстановление");
@@ -88,8 +91,8 @@ public class MainFrame extends JFrame {
         menuItemAbout.addActionListener(new ShowIFrameActionListener<>(AboutIForm.class));
 
         menuBar.add(menu);
-        menuBar.add(menu_1);
-        menuBar.add(menu_2);
+        menuBar.add(menuTerritory);
+        menuBar.add(menuMinistry);
         menuBar.add(menuService);
         menuBar.add(menuHelp);
 
@@ -134,7 +137,7 @@ public class MainFrame extends JFrame {
     }
 
     public void setStatusDB_ERROR() {
-        menu_1.setEnabled(false);
+        menuTerritory.setEnabled(false);
         setStatusText("Нет соединения с базой данных");
     }
 
