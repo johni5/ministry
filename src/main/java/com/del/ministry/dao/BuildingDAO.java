@@ -10,7 +10,7 @@ import java.util.List;
 
 public class BuildingDAO extends AbstractDAO<Building, Long> {
 
-    public BuildingDAO(EntityManager manager) {
+    public BuildingDAO(EntityManagerProvider manager) {
         super(manager, Building.class);
     }
 
@@ -19,25 +19,25 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
                 and().inList("b.area.id", filter.getAreaIds()).
                 and().inList("b.street.id", filter.getStreetIds());
         String sql = "select b from Building b where 1=1 " + filterQuery.getQuery() + " order by area, street";
-        Query query = manager.createQuery(sql);
+        Query query = manager().createQuery(sql);
         filterQuery.init(query);
         return query.getResultList();
     }
 
     public int maxFloor(List<Long> areas) {
         if (areas != null && !areas.isEmpty()) {
-            return getInt(getManager().createQuery("select max(b.floors) from Building b inner join b.area a where a.id in (:areas)").
+            return getInt(manager().createQuery("select max(b.floors) from Building b inner join b.area a where a.id in (:areas)").
                     setParameter("areas", areas).
                     getSingleResult(), 0);
         } else {
-            return getInt(getManager().createQuery("select max(b.floors) from Building b inner join b.area a").
+            return getInt(manager().createQuery("select max(b.floors) from Building b inner join b.area a").
                     getSingleResult(), 0);
         }
     }
 
     public int countAvailable(List<Long> areas) {
         QuerySequence where = new QuerySequence().and().inList("a.id", areas);
-        Query query = getManager().
+        Query query = manager().
                 createQuery("select count(b) " +
                         "       from Building b " +
                         "           inner join b.area a " +

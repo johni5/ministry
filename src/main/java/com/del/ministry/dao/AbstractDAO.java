@@ -6,35 +6,35 @@ import java.util.concurrent.Callable;
 
 abstract public class AbstractDAO<T, ID> {
 
-    protected EntityManager manager;
+    private EntityManagerProvider managerProvider;
     private Class<T> tClass;
 
-    public AbstractDAO(EntityManager manager, Class<T> tClass) {
-        this.manager = manager;
+    public AbstractDAO(EntityManagerProvider managerProvider, Class<T> tClass) {
+        this.managerProvider = managerProvider;
         this.tClass = tClass;
     }
 
     public void createAndCommit(T entity) {
         transaction(() -> {
-            manager.persist(entity);
+            manager().persist(entity);
             return null;
         });
     }
 
     public void create(T entity) {
-        manager.persist(entity);
+        manager().persist(entity);
     }
 
     public T updateAndCommit(T entity) {
-        return transaction(() -> manager.merge(entity));
+        return transaction(() -> manager().merge(entity));
     }
 
     public T update(T entity) {
-        return manager.merge(entity);
+        return manager().merge(entity);
     }
 
     public void refresh(T entity) {
-        manager.refresh(entity);
+        manager().refresh(entity);
     }
 
     public void removeAndCommit(ID id) {
@@ -45,27 +45,27 @@ abstract public class AbstractDAO<T, ID> {
     }
 
     protected <V> V transaction(Callable<V> t) {
-        manager.getTransaction().begin();
+        manager().getTransaction().begin();
         try {
             return t.call();
         } catch (Exception e) {
-            manager.getTransaction().rollback();
+            manager().getTransaction().rollback();
         } finally {
-            manager.getTransaction().commit();
+            manager().getTransaction().commit();
         }
         return null;
     }
 
     public void remove(ID id) {
-        manager.remove(get(id));
+        manager().remove(get(id));
     }
 
     public T get(ID id) {
-        return manager.find(tClass, id);
+        return manager().find(tClass, id);
     }
 
-    protected EntityManager getManager() {
-        return manager;
+    protected EntityManager manager() {
+        return managerProvider.getEntityManager();
     }
 
     public static Long getLong(Object obj, Long def) {

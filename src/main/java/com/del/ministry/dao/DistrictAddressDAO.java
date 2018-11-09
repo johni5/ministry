@@ -8,33 +8,33 @@ import java.util.List;
 
 public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
 
-    public DistrictAddressDAO(EntityManager manager) {
+    public DistrictAddressDAO(EntityManagerProvider manager) {
         super(manager, DistrictAddress.class);
     }
 
     public List<DistrictAddress> findAll() {
-        return manager.createQuery("from DistrictAddress ").getResultList();
+        return manager().createQuery("from DistrictAddress ").getResultList();
     }
 
     public List<DistrictAddress> findByDistrictId(Long districtId) {
-        return manager.createQuery("select da from DistrictAddress da inner join da.building b " +
+        return manager().createQuery("select da from DistrictAddress da inner join da.building b " +
                 "where da.district.id = :districtId order by b.city.name, b.street.name, b.number, da.number ").
                 setParameter("districtId", districtId).getResultList();
     }
 
     public int sizeByDistrictId(Long districtId) {
-        return getInt(manager.createQuery("select count(da) from DistrictAddress da where da.district.id = :districtId ").
+        return getInt(manager().createQuery("select count(da) from DistrictAddress da where da.district.id = :districtId ").
                 setParameter("districtId", districtId).getSingleResult(), 0);
     }
 
 
     public List<Integer> getUsedDoors(Long buildingId) {
-        return getManager().createQuery("select da.number from DistrictAddress da where da.building.id=:buildingId").
+        return manager().createQuery("select da.number from DistrictAddress da where da.building.id=:buildingId").
                 setParameter("buildingId", buildingId).getResultList();
     }
 
     public RootNode getTree() {
-        List list = getManager().
+        List list = manager().
                 createQuery("select c.id, c.name, a.id, a.name, d.id, d.number  " +
                         "       from DistrictAddress da " +
                         "           inner join da.building b " +

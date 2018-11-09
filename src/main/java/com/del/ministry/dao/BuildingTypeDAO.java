@@ -7,11 +7,11 @@ import java.util.List;
 
 public class BuildingTypeDAO extends AbstractDAO<BuildingType, Long> {
 
-    public BuildingTypeDAO(EntityManager manager) {
+    public BuildingTypeDAO(EntityManagerProvider manager) {
         super(manager, BuildingType.class);
     }
 
     public List<BuildingType> findAll() {
-        return manager.createQuery("from BuildingType ").getResultList();
+        return manager().createQuery("from BuildingType ").getResultList();
     }
 }

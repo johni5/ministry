@@ -14,7 +14,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import java.util.List;
 
-public class ServiceManager {
+public class ServiceManager implements EntityManagerProvider {
 
     final static private Logger logger = Logger.getLogger(ServiceManager.class);
 
@@ -44,12 +44,13 @@ public class ServiceManager {
 
     private DaoProvider getProvider() {
         if (provider == null) {
-            provider = new DaoProvider(getEntityManager());
+            provider = new DaoProvider(this);
         }
         return provider;
     }
 
-    private EntityManager getEntityManager() {
+    @Override
+    public EntityManager getEntityManager() {
         if (!isReady()) {
             EntityManagerFactory emf = Persistence.createEntityManagerFactory("ministry");
             entityManager = emf.createEntityManager();

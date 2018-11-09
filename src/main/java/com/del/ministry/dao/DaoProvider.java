@@ -3,17 +3,16 @@ package com.del.ministry.dao;
 import com.del.ministry.utils.CommonException;
 import com.google.common.collect.Maps;
 
-import javax.persistence.EntityManager;
 import java.util.Map;
 
 public class DaoProvider {
 
-    private EntityManager entityManager;
+    private EntityManagerProvider managerProvider;
 
     private Map<Class<? extends AbstractDAO>, AbstractDAO> cache = Maps.newHashMap();
 
-    public DaoProvider(EntityManager entityManager) {
-        this.entityManager = entityManager;
+    public DaoProvider(EntityManagerProvider managerProvider) {
+        this.managerProvider = managerProvider;
     }
 
     public AddressTypeDAO getAddressTypeDAO() throws CommonException {
@@ -60,7 +59,7 @@ public class DaoProvider {
     private <T extends AbstractDAO> T lookup(Class<T> daoClass) throws CommonException {
         if (!cache.containsKey(daoClass)) {
             try {
-                T instance = daoClass.getConstructor(EntityManager.class).newInstance(entityManager);
+                T instance = daoClass.getConstructor(EntityManagerProvider.class).newInstance(managerProvider);
                 cache.put(daoClass, instance);
             } catch (Exception e) {
                 throw new CommonException(e);

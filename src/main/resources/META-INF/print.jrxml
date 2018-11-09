@@ -3,7 +3,7 @@
 	<property name="ireport.zoom" value="1.7715610000000013"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
-	<style name="Base" isDefault="true" fontName="Arial" fontSize="14" pdfEncoding="Cp1251"/>
+	<style name="Base" isDefault="true" fontName="Arial" fontSize="14" pdfEncoding="Identity-H"/>
 	<style name="title" style="Base" mode="Opaque" backcolor="#CCCCCC" fill="Solid" isBold="true">
 		<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
 		<paragraph rightIndent="5"/>
@@ -78,10 +78,6 @@
 	</pageFooter>
 	<lastPageFooter>
 		<band height="50">
-			<textField>
-				<reportElement style="Footer" x="0" y="0" width="355" height="20" uuid="7f664937-a795-45ef-9645-0cb54ca6f150"/>
-				<textFieldExpression><![CDATA[$P{publisher}]]></textFieldExpression>
-			</textField>
 			<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
 				<reportElement style="Footer" x="355" y="0" width="200" height="20" uuid="cb7cb037-10d2-4a31-ad59-a2bdbfe4540c"/>
 				<textElement textAlignment="Right"/>

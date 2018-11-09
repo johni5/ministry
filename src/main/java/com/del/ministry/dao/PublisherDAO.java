@@ -7,11 +7,11 @@ import java.util.List;
 
 public class PublisherDAO extends AbstractDAO<Publisher, Long> {
 
-    public PublisherDAO(EntityManager manager) {
+    public PublisherDAO(EntityManagerProvider manager) {
         super(manager, Publisher.class);
     }
 
     public List<Publisher> findAll() {
-        return manager.createQuery("from Publisher order by lastName, firstName, secondName").getResultList();
+        return manager().createQuery("from Publisher order by lastName, firstName, secondName").getResultList();
     }
 }

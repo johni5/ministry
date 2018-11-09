@@ -11,12 +11,12 @@ import java.util.List;
 
 public class AppointmentDAO extends AbstractDAO<Appointment, Long> {
 
-    public AppointmentDAO(EntityManager manager) {
+    public AppointmentDAO(EntityManagerProvider manager) {
         super(manager, Appointment.class);
     }
 
     public List<Appointment> findAll() {
-        return Unchecked.cast(manager.createQuery("from Appointment ").getResultList());
+        return Unchecked.cast(manager().createQuery("from Appointment ").getResultList());
     }
 
     public List<Appointment> find(AppointmentsFilter filter) {
@@ -26,7 +26,7 @@ public class AppointmentDAO extends AbstractDAO<Appointment, Long> {
                 and().like("lower(a.publisher.lastName)", filter.getLastName()).
                 and().like("lower(a.district.number)", filter.getNumber()).
                 and().isNull("a.completed", filter.isOnlyActiveNow() ? true : null);
-        Query query = manager.createQuery("select a from Appointment a where 1=1 " + where.getQuery() + " order by a.assigned desc, a.id desc");
+        Query query = manager().createQuery("select a from Appointment a where 1=1 " + where.getQuery() + " order by a.assigned desc, a.id desc");
         where.init(query);
         return Unchecked.cast(query.getResultList());
     }

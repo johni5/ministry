@@ -64,6 +64,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 collect(Collectors.toList());
         items.add(0, new NumberItem(0, "Не огранич.", true));
         doorsPerBuildingF = new JComboBox<>(new SelectItemsModel<>(items));
+        doorsPerBuildingF.setSelectedIndex(1);
         areaListF = new JList<>();
         areaListF.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         areaListF.addListSelectionListener(e -> initMaxFloors());
@@ -121,6 +122,10 @@ public class GenerateAddressIForm extends ObservableIFrame {
         List<Long> areas = areaListF.getSelectedValuesList().
                 stream().map(areaItem -> areaItem.getArea().getId()).
                 collect(Collectors.toList());
+        if (ListUtil.isEmpty(areas)) {
+            MainFrame.setStatusError("Укажите районы!");
+            return;
+        }
         filter.setAreaIds(areas);
         ServiceManager serviceManager = ServiceManager.getInstance();
         Map<Long, List<Integer>> usedDoorsAtAll = Maps.newHashMap();
@@ -192,6 +197,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 MainFrame.setStatusText("К участку было привязано адресов: " + ready);
                 Launcher.mainFrame.initLeftSideTree();
                 notifyObservers();
+                initBuildingsCount();
             } else MainFrame.setStatusError("Не был привязан ни один адрес");
 
         } catch (Exception e) {
@@ -205,7 +211,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 stream().map(areaItem -> areaItem.getArea().getId()).
                 collect(Collectors.toList());
         try {
-            int count = ServiceManager.getInstance().countAvailableBuildings(areas);
+            int count = ListUtil.isEmpty(areas) ? 0 : ServiceManager.getInstance().countAvailableBuildings(areas);
             buildingsL.setText("Доступно адресов: " + count);
         } catch (CommonException e) {
             MainFrame.setStatusError("Ошибка получения данных!", e);

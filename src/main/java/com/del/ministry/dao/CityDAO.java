@@ -7,11 +7,11 @@ import java.util.List;
 
 public class CityDAO extends AbstractDAO<City, Long> {
 
-    public CityDAO(EntityManager manager) {
+    public CityDAO(EntityManagerProvider manager) {
         super(manager, City.class);
     }
 
     public List<City> findAll() {
-        return manager.createQuery("from City ").getResultList();
+        return manager().createQuery("from City ").getResultList();
     }
 }
