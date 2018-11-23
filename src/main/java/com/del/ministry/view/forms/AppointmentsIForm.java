@@ -129,6 +129,7 @@ public class AppointmentsIForm extends ObservableIFrame {
                 initDistrictList(districtNumbersF);
                 initTable();
                 MainFrame.setStatusText("Возвещатель " + publisher.getFIO() + " теперь обрабатывает участок " + district.getNumber());
+                Launcher.mainFrame.initLeftSideTree();
             } catch (Exception e1) {
                 MainFrame.setStatusError("Не удалось назначить участок", e1);
             }
@@ -139,14 +140,19 @@ public class AppointmentsIForm extends ObservableIFrame {
             if (appointment != null && dpReturn.getDate() != null) {
                 Date completed = DateUtilz.fromLocalDate(dpReturn.getDate());
                 if (DateUtilz.between(completed, appointment.getAssigned(), DateUtilz.today())) {
-                    appointment.setCompleted(completed);
-                    try {
-                        ServiceManager.getInstance().updateAppointment(appointment);
-                        initDistrictList(districtNumbersF);
-                        initTable();
-                        MainFrame.setStatusText("Возвещатель " + appointment.getPublisher().getFIO() + " сдал участок " + appointment.getDistrict().getNumber());
-                    } catch (CommonException e1) {
-                        MainFrame.setStatusError("Не удалось сдать участок", e1);
+                    String comment = JOptionPane.showInputDialog(this, "Примечания возвещателя", "Сдать участок", JOptionPane.INFORMATION_MESSAGE);
+                    if (comment != null) {
+                        appointment.setCompleted(completed);
+                        appointment.setDescription(comment);
+                        try {
+                            ServiceManager.getInstance().updateAppointment(appointment);
+                            initDistrictList(districtNumbersF);
+                            initTable();
+                            MainFrame.setStatusText("Возвещатель " + appointment.getPublisher().getFIO() + " сдал участок " + appointment.getDistrict().getNumber());
+                            Launcher.mainFrame.initLeftSideTree();
+                        } catch (CommonException e1) {
+                            MainFrame.setStatusError("Не удалось сдать участок", e1);
+                        }
                     }
                 } else {
                     MainFrame.setStatusError(
@@ -172,7 +178,7 @@ public class AppointmentsIForm extends ObservableIFrame {
     private void initDistrictList(JComboBox<DistrictNumbers> districtNumbersF) {
         try {
             List<District> districts = ServiceManager.getInstance().freeDistricts();
-            List<DistrictNumbers> items = districts.stream().map(DistrictNumbers::new).collect(Collectors.toList());
+            List<DistrictNumbers> items = districts.stream().map(DistrictNumbers::new).sorted().collect(Collectors.toList());
             districtNumbersF.setModel(new SelectItemsModel<>(items));
         } catch (CommonException e) {
             MainFrame.setStatusError("Нет доступа к участкам", e);

@@ -187,7 +187,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
     private void initDistrictList(Long selectedId) {
         try {
             List<District> districts = ServiceManager.getInstance().allDistricts();
-            List<DistrictNumbers> items = districts.stream().map(DistrictNumbers::new).collect(Collectors.toList());
+            List<DistrictNumbers> items = districts.stream().map(DistrictNumbers::new).sorted().collect(Collectors.toList());
             Map<Long, DistrictNumbers> hash = Maps.uniqueIndex(items, districtNumbers -> Objects.requireNonNull(districtNumbers).getDistrict().getId());
             districtNumbersF.setModel(new SelectItemsModel<>(items));
             if (selectedId != null && hash.containsKey(selectedId)) {

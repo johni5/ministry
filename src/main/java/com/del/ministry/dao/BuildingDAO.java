@@ -18,7 +18,11 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
                 and().inList("b.type.id", filter.getBuildingTypeIds()).
                 and().inList("b.area.id", filter.getAreaIds()).
                 and().inList("b.street.id", filter.getStreetIds());
-        String sql = "select b from Building b where 1=1 " + filterQuery.getQuery() + " order by area, street";
+        String sql = "select b from Building b where 1=1 ";
+        if (filter.isOnlyAvailableDoors()) {
+            sql += "and b.doors > (select count(da) from DistrictAddress da where da.building.id=b.id)";
+        }
+        sql += filterQuery.getQuery() + " order by area, street";
         Query query = manager().createQuery(sql);
         filterQuery.init(query);
         return query.getResultList();

@@ -1,5 +1,6 @@
 package com.del.ministry.view.models;
 
+import com.del.ministry.db.AddressType;
 import com.del.ministry.db.Building;
 import com.del.ministry.db.DistrictAddress;
 
@@ -22,11 +23,13 @@ public class DistrictAddressItem implements Comparable<DistrictAddressItem> {
     @Override
     public String toString() {
         Building building = address.getBuilding();
+        AddressType type = address.getType();
         return building.getArea().getName() +
                 ", " + building.getCity().getName() +
                 ", ул." + building.getStreet().getName() +
                 ", д." + building.getNumber() +
-                ", кв." + address.getNumber();
+                ", кв." + address.getNumber() +
+                (AddressType.DEFAULT_TYPE.equals(type.getShortName()) ? "" : " (" + type.getName() + ")");
     }
 
     @Override

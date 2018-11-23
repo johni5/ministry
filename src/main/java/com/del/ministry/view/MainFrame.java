@@ -107,7 +107,9 @@ public class MainFrame extends JFrame {
 
         getContentPane().add(statusBar, BorderLayout.SOUTH);
         leftSideTree = new JTree();
-        leftSide.add(leftSideTree);
+        JScrollPane sp = new JScrollPane();
+        sp.setViewportView(leftSideTree);
+        leftSide.add(sp);
 
         JSplitPane p = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
         getContentPane().add(p, BorderLayout.CENTER);

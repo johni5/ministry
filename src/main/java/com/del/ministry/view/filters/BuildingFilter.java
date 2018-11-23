@@ -10,6 +10,7 @@ public class BuildingFilter {
 
     public static final BuildingFilter EMPTY = new BuildingFilter();
 
+    private boolean onlyAvailableDoors;
     private List<Long> areaIds;
     private List<Long> streetIds;
     private List<Long> buildingTypeIds;
@@ -20,6 +21,14 @@ public class BuildingFilter {
 
     public void setBuildingTypeIds(List<Long> buildingTypeIds) {
         this.buildingTypeIds = buildingTypeIds;
+    }
+
+    public boolean isOnlyAvailableDoors() {
+        return onlyAvailableDoors;
+    }
+
+    public void setOnlyAvailableDoors(boolean onlyAvailableDoors) {
+        this.onlyAvailableDoors = onlyAvailableDoors;
     }
 
     public List<Long> getAreaIds() {

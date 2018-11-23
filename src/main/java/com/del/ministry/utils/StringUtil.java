@@ -1,5 +1,11 @@
 package com.del.ministry.utils;
 
+import com.google.common.collect.Lists;
+
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class StringUtil {
 
     private StringUtil() {
@@ -82,6 +88,21 @@ public class StringUtil {
         substrLen2 = Math.max(substrLen2, substrLen);
         String scrapText = str.substring(0, substrLen) + middleStr + str.substring(substrLen2);
         return scrapText.length() > str.length() ? str : scrapText;
+    }
+
+    public static List<Integer> extractNumbers(String text) {
+        if (isTrimmedEmpty(text)) return null;
+        Pattern p = Pattern.compile("-?\\d+");
+        Matcher m = p.matcher(text);
+        List<Integer> i = Lists.newArrayList();
+        while (m.find()) {
+            try {
+                i.add(Integer.parseInt(m.group()));
+            } catch (NumberFormatException e) {
+                //
+            }
+        }
+        return i;
     }
 
 }

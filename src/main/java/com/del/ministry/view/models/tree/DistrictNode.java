@@ -1,7 +1,13 @@
 package com.del.ministry.view.models.tree;
 
+import com.del.ministry.db.Publisher;
+import com.del.ministry.utils.DateUtilz;
+import com.del.ministry.utils.ListUtil;
+import com.del.ministry.utils.StringUtil;
+
 import javax.swing.tree.TreeNode;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 
 public class DistrictNode implements TreeNode, Comparable<DistrictNode> {
@@ -10,10 +16,15 @@ public class DistrictNode implements TreeNode, Comparable<DistrictNode> {
     private Long districtId;
     private String districtName;
 
-    public DistrictNode(AreaNode parent, Long districtId, String districtName) {
+    private Publisher publisher;
+    private Date appointmentFrom;
+
+    public DistrictNode(AreaNode parent, Long districtId, String districtName, Publisher publisher, Date appointmentFrom) {
         this.parent = parent;
         this.districtId = districtId;
         this.districtName = districtName;
+        this.publisher = publisher;
+        this.appointmentFrom = appointmentFrom;
     }
 
     @Override
@@ -60,11 +71,18 @@ public class DistrictNode implements TreeNode, Comparable<DistrictNode> {
 
     @Override
     public String toString() {
-        return districtName;
+        StringBuilder sb = new StringBuilder(districtName);
+        if (publisher != null) {
+            sb.append(" - ").append(publisher.getFIO()).
+                    append(" (").append(DateUtilz.formatDate(appointmentFrom)).append(")");
+        }
+        return sb.toString();
     }
 
     @Override
     public int compareTo(DistrictNode o) {
-        return districtName.compareTo(o.districtName);
+        int i1 = ListUtil.safeGet(StringUtil.extractNumbers(districtName), 0, 0);
+        int i2 = ListUtil.safeGet(StringUtil.extractNumbers(o.districtName), 0, 0);
+        return i1 - i2;
     }
 }

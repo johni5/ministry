@@ -1,5 +1,6 @@
 package com.del.ministry.view.models.tree;
 
+import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.ListUtil;
 import com.google.common.collect.Lists;
 
@@ -10,16 +11,16 @@ public class RootNode implements TreeNode {
 
     private List<CityNode> child;
 
-    public void addChild(Long cityId, String sityName, Long areaId, String areaName, Long districtId, String districtName) {
+    public void addChild(Long cityId, String cityName, Long areaId, String areaName, Long districtId, String districtName, Publisher publisher, Date appointmentFrom) {
         if (child == null) {
             child = Lists.newArrayList();
         }
         CityNode node = find(cityId);
         if (node == null) {
-            node = new CityNode(this, cityId, sityName);
+            node = new CityNode(this, cityId, cityName);
             child.add(node);
         }
-        node.addChild(areaId, areaName, districtId, districtName);
+        node.addChild(areaId, areaName, districtId, districtName, publisher, appointmentFrom);
     }
 
     public CityNode find(Long cityId) {

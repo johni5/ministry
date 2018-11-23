@@ -164,7 +164,9 @@ public class AddAddressIForm extends ObservableIFrame {
         this.district = district;
         setTitle("Редактировать участок '" + district.getNumber() + "'");
         try {
-            List<Building> buildings = ServiceManager.getInstance().findBuildings(BuildingFilter.EMPTY);
+            BuildingFilter f = new BuildingFilter();
+            f.setOnlyAvailableDoors(true);
+            List<Building> buildings = ServiceManager.getInstance().findBuildings(f);
             addressList = buildings.stream().map(DistrictAddAddress::new).collect(Collectors.toList());
             filterAddressList();
         } catch (Exception e) {

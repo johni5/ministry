@@ -1,10 +1,13 @@
 package com.del.ministry.dao;
 
+import com.del.ministry.db.Appointment;
 import com.del.ministry.db.DistrictAddress;
+import com.del.ministry.utils.Unchecked;
 import com.del.ministry.view.models.tree.RootNode;
+import com.google.common.collect.Maps;
 
-import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Map;
 
 public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
 
@@ -34,6 +37,13 @@ public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
     }
 
     public RootNode getTree() {
+        List<Appointment> appList = Unchecked.cast(manager().
+                createQuery("select a from Appointment a where a.completed is null").
+                getResultList());
+        Map<Long, Appointment> activeApp = Maps.uniqueIndex(appList, a -> {
+            assert a != null;
+            return a.getDistrict().getId();
+        });
         List list = manager().
                 createQuery("select c.id, c.name, a.id, a.name, d.id, d.number  " +
                         "       from DistrictAddress da " +
@@ -47,13 +57,17 @@ public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
         RootNode rootNode = new RootNode();
         for (Object o : list) {
             Object[] row = (Object[]) o;
+            Long districtId = getLong(row[4], 0L);
+            Appointment appointment = activeApp.get(districtId);
             rootNode.addChild(
                     getLong(row[0], 0L),
                     getString(row[1], ""),
                     getLong(row[2], 0L),
                     getString(row[3], ""),
-                    getLong(row[4], 0L),
-                    getString(row[5], "")
+                    districtId,
+                    getString(row[5], ""),
+                    appointment != null ? appointment.getPublisher() : null,
+                    appointment != null ? appointment.getAssigned() : null
             );
         }
         return rootNode;

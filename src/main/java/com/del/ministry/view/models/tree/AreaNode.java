@@ -1,12 +1,13 @@
 package com.del.ministry.view.models.tree;
 
+import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.ListUtil;
 import com.google.common.collect.Lists;
 
 import javax.swing.tree.TreeNode;
 import java.util.*;
 
-public class AreaNode implements TreeNode {
+public class AreaNode implements TreeNode, Comparable<AreaNode> {
 
     private Long areaId;
     private String areaName;
@@ -53,11 +54,11 @@ public class AreaNode implements TreeNode {
         return Collections.enumeration(child);
     }
 
-    public void addChild(Long districtId, String districtName) {
+    public void addChild(Long districtId, String districtName, Publisher publisher, Date appointmentFrom) {
         if (child == null) {
             child = Lists.newArrayList();
         }
-        child.add(new DistrictNode(this, districtId, districtName));
+        child.add(new DistrictNode(this, districtId, districtName, publisher, appointmentFrom));
         Collections.sort(child);
     }
 
@@ -82,5 +83,10 @@ public class AreaNode implements TreeNode {
     @Override
     public String toString() {
         return areaName + "(" + ListUtil.size(child) + ")";
+    }
+
+    @Override
+    public int compareTo(AreaNode o) {
+        return areaName.compareTo(o.areaName);
     }
 }

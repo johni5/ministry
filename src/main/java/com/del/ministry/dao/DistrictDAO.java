@@ -17,8 +17,10 @@ public class DistrictDAO extends AbstractDAO<District, Long> {
     }
 
     public List<District> findFree() {
-        return manager().createQuery("select d from District d where d.id not in " +
-                " (select a.district.id from Appointment a where a.completed is null) order by d.number").
+        return manager().createQuery("select d from District d where " +
+                " d.id not in (select a.district.id from Appointment a where a.completed is null) " +
+                " and d.id in (select da.district.id from DistrictAddress da ) " +
+                " order by d.number").
                 getResultList();
     }
 
