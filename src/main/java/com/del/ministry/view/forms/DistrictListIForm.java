@@ -176,6 +176,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 MainFrame.setStatusError("Невозможно удалить адрес", e);
             }
         });
+        Launcher.mainFrame.initLeftSideTree();
         initAddressList();
     }
 

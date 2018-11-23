@@ -12,6 +12,15 @@ public class BuildingFilter {
 
     private List<Long> areaIds;
     private List<Long> streetIds;
+    private List<Long> buildingTypeIds;
+
+    public List<Long> getBuildingTypeIds() {
+        return buildingTypeIds;
+    }
+
+    public void setBuildingTypeIds(List<Long> buildingTypeIds) {
+        this.buildingTypeIds = buildingTypeIds;
+    }
 
     public List<Long> getAreaIds() {
         return areaIds;

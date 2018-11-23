@@ -9,9 +9,7 @@ import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.BuildingFilter;
-import com.del.ministry.view.models.AreaItem;
-import com.del.ministry.view.models.NumberItem;
-import com.del.ministry.view.models.SelectItemsModel;
+import com.del.ministry.view.models.*;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -33,6 +31,8 @@ public class GenerateAddressIForm extends ObservableIFrame {
 
     private JSpinner maxDoorsF;
     private JList<AreaItem> areaListF;
+    private JList<BuildingTypeItem> bTypeListF;
+    private JComboBox<NumberItem> densityRateF;
     private JComboBox<NumberItem> doorsPerBuildingF;
     private JComboBox<NumberItem> maxFloorF;
     private JComboBox<NumberItem> intervalF;
@@ -53,40 +53,60 @@ public class GenerateAddressIForm extends ObservableIFrame {
         buildingsL = new JLabel("");
         maxDoorsF = new JSpinner(new SpinnerNumberModel(70, 1, 200, 1));
         maxFloorF = new JComboBox<>();
+
         List<NumberItem> items = Stream.of(10, 20, 30, 40, 50, 60, 70).
                 map(NumberItem::new).
                 collect(Collectors.toList());
         items.add(0, new NumberItem(0, "Не задан", true));
         intervalF = new JComboBox<>(new SelectItemsModel<>(items));
         intervalF.setEnabled(false);
+
         items = Stream.of(1, 2, 3, 4, 5, 10, 15).
-                map(i -> new NumberItem(i, i + " кв./дом")).
+                map(i -> new NumberItem(i, i + " кв./[един.пл.]")).
                 collect(Collectors.toList());
         items.add(0, new NumberItem(0, "Не огранич.", true));
         doorsPerBuildingF = new JComboBox<>(new SelectItemsModel<>(items));
         doorsPerBuildingF.setSelectedIndex(1);
+        doorsPerBuildingF.addActionListener(e -> densityRateF.setEnabled(!doorsPerBuildingF.getItemAt(doorsPerBuildingF.getSelectedIndex()).isCommon()));
+
+        items = Stream.of(10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150).
+                map(NumberItem::new).
+                collect(Collectors.toList());
+        items.add(0, new NumberItem(0, "Дом", true));
+        densityRateF = new JComboBox<>(new SelectItemsModel<>(items));
+        densityRateF.setSelectedIndex(0);
+
         areaListF = new JList<>();
+        areaListF.setSelectionModel(new OneClickListSelectionModel());
         areaListF.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         areaListF.addListSelectionListener(e -> initMaxFloors());
         areaListF.addListSelectionListener(e -> initBuildingsCount());
+        bTypeListF = new JList<>();
+        bTypeListF.setSelectionModel(new OneClickListSelectionModel());
+        bTypeListF.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        bTypeListF.addListSelectionListener(e -> initMaxFloors());
+        bTypeListF.addListSelectionListener(e -> initBuildingsCount());
 
         makeBtn = new JButton("Заполнить");
         makeBtn.addActionListener(e -> generate());
 
         panel.add(FormBuilder.create().
                         columns("250:grow, 5, 100, 5, 120")
-                        .rows("p, 5, p, 5, p, 5, p, fill:0:grow, 5, p")
+                        .rows("p, 5, p, 5, p, 5, p, 5, p, fill:0:grow, 5, p, 5, p")
                         .padding(Paddings.DIALOG)
-                        .add("Укажите районы").xy(1, 1).add("Квартир").xy(3, 1).add(maxDoorsF).xy(5, 1)
-                        .add(areaListF).xywh(1, 3, 1, 6)
+                        .add("Укажите районы и типы адресов").xy(1, 1).add("Квартир").xy(3, 1).add(maxDoorsF).xy(5, 1)
+                        .add(areaListF).xywh(1, 3, 1, 8)
                         .add("Этажей").xy(3, 3).add(maxFloorF).xy(5, 3)
                         .add("Расброс").xy(3, 5).add(intervalF).xy(5, 5)
                         .add("Плотность").xy(3, 7).add(doorsPerBuildingF).xy(5, 7)
-                        .add(buildingsL).xy(1, 10).add(makeBtn).xyw(3, 10, 3)
+                        .add("Един. плотности").xy(3, 9).add(densityRateF).xy(5, 9)
+                        .add(bTypeListF).xy(1, 12)
+                        .add(buildingsL).xy(1, 14).add(makeBtn).xyw(3, 14, 3)
                         .build(),
                 BorderLayout.CENTER);
 
         initAreaList();
+        initBTypesList();
         initMaxFloors();
         initBuildingsCount();
 
@@ -97,10 +117,13 @@ public class GenerateAddressIForm extends ObservableIFrame {
         List<Long> areas = areaListF.getSelectedValuesList().
                 stream().map(areaItem -> areaItem.getArea().getId()).
                 collect(Collectors.toList());
+        List<Long> bTypes = bTypeListF.getSelectedValuesList().
+                stream().map(typeItem -> typeItem.getType().getId()).
+                collect(Collectors.toList());
         List<NumberItem> floorItems = Lists.newArrayList();
         floorItems.add(new NumberItem(0, "Не задан", true));
         try {
-            int maxFloor = ServiceManager.getInstance().getMaxFloor(areas);
+            int maxFloor = ServiceManager.getInstance().getMaxFloor(areas, bTypes);
             floorItems.addAll(Stream.iterate(1, i -> i + 1).limit(maxFloor).map(NumberItem::new).collect(Collectors.toList()));
         } catch (Exception e) {
             MainFrame.setStatusError("Ошибка получения данных!", e);
@@ -111,7 +134,16 @@ public class GenerateAddressIForm extends ObservableIFrame {
     private void initAreaList() {
         try {
             List<Area> areas = ServiceManager.getInstance().findAreas();
-            areaListF.setModel(new SelectItemsModel<AreaItem>(areas.stream().map(AreaItem::new).sorted().collect(Collectors.toList())));
+            areaListF.setModel(new SelectItemsModel<>(areas.stream().map(AreaItem::new).sorted().collect(Collectors.toList())));
+        } catch (Exception e) {
+            MainFrame.setStatusError("Ошибка получения данных!", e);
+        }
+    }
+
+    private void initBTypesList() {
+        try {
+            List<BuildingType> types = ServiceManager.getInstance().findBuildingTypes();
+            bTypeListF.setModel(new SelectItemsModel<>(types.stream().map(BuildingTypeItem::new).sorted().collect(Collectors.toList())));
         } catch (Exception e) {
             MainFrame.setStatusError("Ошибка получения данных!", e);
         }
@@ -122,20 +154,30 @@ public class GenerateAddressIForm extends ObservableIFrame {
         List<Long> areas = areaListF.getSelectedValuesList().
                 stream().map(areaItem -> areaItem.getArea().getId()).
                 collect(Collectors.toList());
+        List<Long> bTypes = bTypeListF.getSelectedValuesList().
+                stream().map(typeItem -> typeItem.getType().getId()).
+                collect(Collectors.toList());
         if (ListUtil.isEmpty(areas)) {
             MainFrame.setStatusError("Укажите районы!");
             return;
         }
+        if (ListUtil.isEmpty(bTypes)) {
+            MainFrame.setStatusError("Укажите типы адресов!");
+            return;
+        }
         filter.setAreaIds(areas);
+        filter.setBuildingTypeIds(bTypes);
         ServiceManager serviceManager = ServiceManager.getInstance();
         Map<Long, List<Integer>> usedDoorsAtAll = Maps.newHashMap();
         Map<Long, AtomicInteger> doorsCounter = Maps.newHashMap();
+        Map<Long, Integer> doorsLimit = Maps.newHashMap();
         try {
             AddressType defaultAddressType = serviceManager.getDefaultAddressType();
             int districtSize = serviceManager.getDistrictAddressesSize(getDistrict().getId());
             List<Building> buildings = serviceManager.findBuildings(filter);
             for (Building building : buildings) {
                 usedDoorsAtAll.put(building.getId(), serviceManager.getUsedDoors(building.getId()));
+                doorsLimit.put(building.getId(), calcDoorsLimit(building));
             }
             List<Building> readyBuildings = buildings.stream().
                     filter(building -> building.getDoors() > usedDoorsAtAll.get(building.getId()).size()).
@@ -146,11 +188,9 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 return;
             }
             NumberItem manualMaxFloors = maxFloorF.getItemAt(maxFloorF.getSelectedIndex());
-            NumberItem manualMaxDoors = doorsPerBuildingF.getItemAt(doorsPerBuildingF.getSelectedIndex());
             int ready = 0;
-            int index = 0;
             while (ready < ((Integer) maxDoorsF.getValue()) - districtSize) {
-                Building building = readyBuildings.get(index);
+                Building building = readyBuildings.get(0);
                 List<Integer> usedDoors = usedDoorsAtAll.get(building.getId());
                 if (usedDoors.size() < building.getDoors()) {
                     Integer rndDoor = DistrictGenerator.rndDoor(
@@ -163,10 +203,9 @@ public class GenerateAddressIForm extends ObservableIFrame {
                         if (!doorsCounter.containsKey(building.getId())) {
                             doorsCounter.put(building.getId(), new AtomicInteger(0));
                         }
-                        if (doorsCounter.get(building.getId()).incrementAndGet() >= manualMaxDoors.getNumber(building.getDoors()).intValue()) {
+                        if (doorsCounter.get(building.getId()).incrementAndGet() >= doorsLimit.get(building.getId())) {
                             // ограничение по плотности квартир на дом больше не позволяет присваивать адреса
-                            readyBuildings.remove(index);
-                            index--;
+                            readyBuildings.remove(0);
                         }
 
 //                        System.out.println(ready + " -> " + building + " -> " + rndDoor + "(" + doorsCounter.get(building.getId()).get() + ")");
@@ -181,16 +220,13 @@ public class GenerateAddressIForm extends ObservableIFrame {
                         ready++;
                     } else {
                         // ограничение по этажам больше не позволяет присваивать адреса
-                        readyBuildings.remove(index);
-                        index--;
+                        readyBuildings.remove(0);
                     }
                 } else {
                     // адреса закончились
-                    readyBuildings.remove(index);
-                    index--;
+                    readyBuildings.remove(0);
                 }
                 if (ListUtil.isEmpty(readyBuildings)) break;
-                index = (index + 1) % readyBuildings.size();
             }
 
             if (ready > 0) {
@@ -206,13 +242,29 @@ public class GenerateAddressIForm extends ObservableIFrame {
 
     }
 
+    /**
+     * Максимальное число квартир для дома в соответствии с параметрами плотности
+     */
+    private Integer calcDoorsLimit(Building building) {
+        if (!densityRateF.isEnabled()) return building.getDoors();
+        NumberItem manualMaxDoors = doorsPerBuildingF.getItemAt(doorsPerBuildingF.getSelectedIndex());
+        NumberItem densityRate = densityRateF.getItemAt(densityRateF.getSelectedIndex());
+        int densityRateValue = densityRate.getNumber(building.getDoors()).intValue();
+        int manualMaxDoorsValue = manualMaxDoors.getNumber(building.getDoors()).intValue();
+        return (int) ((building.getDoors() * manualMaxDoorsValue * 1.0) / (densityRateValue * 1.0));
+    }
+
     private void initBuildingsCount() {
         List<Long> areas = areaListF.getSelectedValuesList().
                 stream().map(areaItem -> areaItem.getArea().getId()).
                 collect(Collectors.toList());
+        List<Long> bTypes = bTypeListF.getSelectedValuesList().
+                stream().map(typeItem -> typeItem.getType().getId()).
+                collect(Collectors.toList());
         try {
-            int count = ListUtil.isEmpty(areas) ? 0 : ServiceManager.getInstance().countAvailableBuildings(areas);
-            buildingsL.setText("Доступно адресов: " + count);
+            int count = ListUtil.isEmpty(areas) || ListUtil.isEmpty(bTypes) ? 0 :
+                    ServiceManager.getInstance().countAvailableBuildings(areas, bTypes);
+            buildingsL.setText("Доступно домов: " + count);
         } catch (CommonException e) {
             MainFrame.setStatusError("Ошибка получения данных!", e);
         }

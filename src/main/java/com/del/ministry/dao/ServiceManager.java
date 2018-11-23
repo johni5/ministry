@@ -242,12 +242,12 @@ public class ServiceManager implements EntityManagerProvider {
         return getProvider().getBuildingDAO().findAll(filter);
     }
 
-    public int countAvailableBuildings(List<Long> areas) throws CommonException {
-        return getProvider().getBuildingDAO().countAvailable(areas);
+    public int countAvailableBuildings(List<Long> areas, List<Long> bTypes) throws CommonException {
+        return getProvider().getBuildingDAO().countAvailable(areas, bTypes);
     }
 
-    public int getMaxFloor(List<Long> areas) throws CommonException {
-        return getProvider().getBuildingDAO().maxFloor(areas);
+    public int getMaxFloor(List<Long> areas, List<Long> bTypes) throws CommonException {
+        return getProvider().getBuildingDAO().maxFloor(areas, bTypes);
     }
 
     /*DISTRICT ADDRESS*/
