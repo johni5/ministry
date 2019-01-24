@@ -5,7 +5,7 @@ import com.del.ministry.utils.Unchecked;
 import com.del.ministry.utils.query.QuerySequence;
 import com.del.ministry.view.filters.AppointmentsFilter;
 
-import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import java.util.List;
 
@@ -29,5 +29,16 @@ public class AppointmentDAO extends AbstractDAO<Appointment, Long> {
         Query query = manager().createQuery("select a from Appointment a where 1=1 " + where.getQuery() + " order by a.assigned desc, a.id desc");
         where.init(query);
         return Unchecked.cast(query.getResultList());
+    }
+
+    public Appointment findActive(Long districtId) {
+        try {
+            return Unchecked.cast(manager().
+                    createQuery("select a from Appointment a where a.district.id = :id and a.completed is null").
+                    setParameter("id", districtId).
+                    getSingleResult());
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 }

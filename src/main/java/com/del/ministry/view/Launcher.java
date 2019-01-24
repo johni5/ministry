@@ -3,6 +3,7 @@ package com.del.ministry.view;
 import org.apache.log4j.Logger;
 
 import javax.swing.*;
+import java.util.Locale;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 
@@ -31,6 +32,7 @@ public class Launcher {
             mainFrame = new MainFrame();
             mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
             mainFrame.setVisible(true);
+            mainFrame.setLocale(new Locale("RU"));
             MainFrame.setStatusText("Идет загрузка, подождите...");
         });
     }

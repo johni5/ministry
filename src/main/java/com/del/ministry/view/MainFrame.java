@@ -7,10 +7,15 @@ import com.del.ministry.view.actions.MainFrameActions;
 import com.del.ministry.view.actions.RestoreAction;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.forms.*;
+import com.del.ministry.view.models.tree.DistrictNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 
 public class MainFrame extends JFrame {
@@ -20,6 +25,7 @@ public class MainFrame extends JFrame {
     private JMenu menuTerritory;
     private JMenu menuMinistry;
     private JTree leftSideTree;
+    private ShowIFrameActionListener<AppointmentsIForm> appointmentsActionListener;
 
     private final static JLabel STATUS_TEXT = new JLabel();
 
@@ -75,7 +81,9 @@ public class MainFrame extends JFrame {
         menuMinistry.add(menuItemAppointments);
         menuItem_2_1.addActionListener(new ShowIFrameActionListener<>(DistrictListIForm.class));
         menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
-        menuItemAppointments.addActionListener(new ShowIFrameActionListener<>(AppointmentsIForm.class));
+
+        appointmentsActionListener = new ShowIFrameActionListener<>(AppointmentsIForm.class);
+        menuItemAppointments.addActionListener(appointmentsActionListener);
 
         JMenu menuService = new JMenu("Сервис");
         JMenuItem menuItemRestore = new JMenuItem("Восстановление");
@@ -111,6 +119,7 @@ public class MainFrame extends JFrame {
         sp.setViewportView(leftSideTree);
         leftSide.add(sp);
 
+
         JSplitPane p = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
         getContentPane().add(p, BorderLayout.CENTER);
 
@@ -124,6 +133,25 @@ public class MainFrame extends JFrame {
             DefaultTreeModel model = new DefaultTreeModel(ServiceManager.getInstance().getDistrictTree());
             leftSideTree.setModel(model);
             expandAllNodes(leftSideTree, 0, leftSideTree.getRowCount());
+            MouseListener ml = new MouseAdapter() {
+                public void mousePressed(MouseEvent e) {
+                    int selRow = leftSideTree.getRowForLocation(e.getX(), e.getY());
+                    TreePath selPath = leftSideTree.getPathForLocation(e.getX(), e.getY());
+                    if (selRow != -1) {
+                        if (e.getClickCount() == 1) {
+//                            mySingleClick(selRow, selPath);
+                        } else if (e.getClickCount() == 2) {
+//                            myDoubleClick(selRow, selPath);
+                            if (selPath != null && selPath.getLastPathComponent() instanceof DistrictNode) {
+                                DistrictNode node = (DistrictNode) selPath.getLastPathComponent();
+                                appointmentsActionListener.safeOpen();
+                                appointmentsActionListener.getInstance().selectDistrict(node.getDistrictId());
+                            }
+                        }
+                    }
+                }
+            };
+            leftSideTree.addMouseListener(ml);
         } catch (Exception e) {
             setStatusError("Ошибка построения дерева участков", e);
         }

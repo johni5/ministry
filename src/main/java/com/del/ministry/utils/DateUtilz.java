@@ -1,11 +1,15 @@
 package com.del.ministry.utils;
 
 import org.apache.commons.lang.time.DateUtils;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+import org.joda.time.format.PeriodFormatter;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 final public class DateUtilz {
 
@@ -54,5 +58,10 @@ final public class DateUtilz {
         return dateFormat.format(date);
     }
 
+    public static String formatPeriod(Date from, Date to, Locale locale) {
+        Period p = new Period(from.getTime(), to.getTime());
+        PeriodFormatter formatter = PeriodFormat.wordBased(locale);
+        return formatter.print(p);
+    }
 
 }

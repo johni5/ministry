@@ -38,6 +38,10 @@ public class ShowIFrameActionListener<E extends ObservableIFrame> implements Act
     }
 
     public void actionPerformed(ActionEvent ae) {
+        safeOpen();
+    }
+
+    public void safeOpen() {
         try {
             if (instance == null || instance.isClosed() || !instance.isVisible()) {
                 instance = eClass.newInstance();

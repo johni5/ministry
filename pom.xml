@@ -11,7 +11,7 @@
     <name>ministry</name>
 
     <properties>
-        <version.info>1.04</version.info>
+        <version.info>1.05</version.info>
         <maven.build.timestamp.format>yyMMdd_HHmm</maven.build.timestamp.format>
         <version.date>${maven.build.timestamp}</version.date>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -87,6 +87,13 @@
             <version>2.6</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.1</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <dependency>
             <groupId>net.sf.jasperreports</groupId>

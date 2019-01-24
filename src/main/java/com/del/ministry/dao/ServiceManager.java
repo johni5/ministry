@@ -206,6 +206,10 @@ public class ServiceManager implements EntityManagerProvider {
         return getProvider().getAppointmentDAO().find(filter);
     }
 
+    public Appointment findActiveAppointment(Long districtId) throws CommonException {
+        return getProvider().getAppointmentDAO().findActive(districtId);
+    }
+
     /*PUBLISHER*/
 
     public void createPublisher(Publisher item) throws CommonException {
