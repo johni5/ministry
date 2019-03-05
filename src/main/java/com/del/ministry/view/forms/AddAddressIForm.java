@@ -116,7 +116,7 @@ public class AddAddressIForm extends ObservableIFrame {
                 Launcher.mainFrame.initLeftSideTree();
                 notifyObservers();
             } catch (Exception e1) {
-                MainFrame.setStatusError("Не удалось привязить адрес", e1);
+                Launcher.mainFrame.setStatusError("Не удалось привязить адрес", e1);
             }
         }
     }
@@ -127,7 +127,7 @@ public class AddAddressIForm extends ObservableIFrame {
             List<AddressTypeItem> types = addressTypes.stream().map(AddressTypeItem::new).collect(Collectors.toList());
             typeF.setModel(new DefaultComboBoxModel<>(new Vector<>(types)));
         } catch (CommonException e) {
-            MainFrame.setStatusError("Ошибка чтения типов адресов", e);
+            Launcher.mainFrame.setStatusError("Ошибка чтения типов адресов", e);
         }
     }
 
@@ -146,7 +146,7 @@ public class AddAddressIForm extends ObservableIFrame {
                 });
                 doorsF.setModel(new DefaultComboBoxModel<>(new Vector<>(items)));
             } catch (CommonException e1) {
-                MainFrame.setStatusError("Нет доступа к данным", e1);
+                Launcher.mainFrame.setStatusError("Нет доступа к данным", e1);
             }
         }
     }
@@ -170,7 +170,7 @@ public class AddAddressIForm extends ObservableIFrame {
             addressList = buildings.stream().map(DistrictAddAddress::new).collect(Collectors.toList());
             filterAddressList();
         } catch (Exception e) {
-            MainFrame.setStatusError("Нет доступа к адресам", e);
+            Launcher.mainFrame.setStatusError("Нет доступа к адресам", e);
         }
     }
 }

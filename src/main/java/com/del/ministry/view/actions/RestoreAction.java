@@ -22,14 +22,14 @@ public class RestoreAction implements ActionListener {
                 String pwd = JOptionPane.showInputDialog(Launcher.mainFrame, "Введите пароль", "Восстановление базы данных", JOptionPane.QUESTION_MESSAGE);
                 if (!StringUtil.isTrimmedEmpty(pwd)) {
                     ServiceManager.getInstance().restoreData(selectedFile.getCanonicalPath(), pwd);
-                    MainFrame.setStatusText("Данные успешно восстановлены из файла '" + selectedFile.getCanonicalPath() + "'");
+                    Launcher.mainFrame.setStatusText("Данные успешно восстановлены из файла '" + selectedFile.getCanonicalPath() + "'");
                     int answer = JOptionPane.showConfirmDialog(Launcher.mainFrame, "Изменения вступят в силу после перезапуска. Завершить работу программы сейчас?", "Восстановление базы данных", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
                     if (answer == JOptionPane.YES_OPTION) {
                         Launcher.mainFrame.close();
                     }
                 }
             } catch (Exception e1) {
-                MainFrame.setStatusError("Невозможно восстановить данные", e1);
+                Launcher.mainFrame.setStatusError("Невозможно восстановить данные", e1);
             }
         }
 

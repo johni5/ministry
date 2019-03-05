@@ -122,10 +122,10 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 district.setNumber(number);
                 try {
                     ServiceManager.getInstance().updateDistrict(district);
-                    MainFrame.setStatusText("Участок успешно переименован");
+                    Launcher.mainFrame.setStatusText("Участок успешно переименован");
                     Launcher.mainFrame.initLeftSideTree();
                 } catch (Exception e) {
-                    MainFrame.setStatusError("Невозможно переименовать участок!", e);
+                    Launcher.mainFrame.setStatusError("Невозможно переименовать участок!", e);
                 } finally {
                     initDistrictList(district.getId());
                     newDistrictNumberF.setText("");
@@ -139,14 +139,14 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
         if (selectedItem != null) {
             try {
                 ServiceManager.getInstance().deleteDistrict(selectedItem.getDistrict().getId());
-                MainFrame.setStatusText("Запись удалена");
+                Launcher.mainFrame.setStatusText("Запись удалена");
                 initDistrictList();
                 initAddressList();
                 Launcher.mainFrame.initLeftSideTree();
             } catch (CommonException e1) {
-                MainFrame.setStatusError(e1.getMessage(), e1);
+                Launcher.mainFrame.setStatusError(e1.getMessage(), e1);
             } catch (Exception e1) {
-                MainFrame.setStatusError("Ошибка при удалении участка", e1);
+                Launcher.mainFrame.setStatusError("Ошибка при удалении участка", e1);
             }
         }
     }
@@ -158,12 +158,12 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 District d = new District();
                 d.setNumber(number);
                 ServiceManager.getInstance().createDistrict(d);
-                MainFrame.setStatusText("Участок создан");
+                Launcher.mainFrame.setStatusText("Участок создан");
                 newDistrictNumberF.setText("");
                 initDistrictList();
                 Launcher.mainFrame.initLeftSideTree();
             } catch (Exception e1) {
-                MainFrame.setStatusError("Ошибка при сохранении участка", e1);
+                Launcher.mainFrame.setStatusError("Ошибка при сохранении участка", e1);
             }
         }
     }
@@ -173,7 +173,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
             try {
                 ServiceManager.getInstance().deleteDistrictAddress(item.getAddress());
             } catch (CommonException e) {
-                MainFrame.setStatusError("Невозможно удалить адрес", e);
+                Launcher.mainFrame.setStatusError("Невозможно удалить адрес", e);
             }
         });
         Launcher.mainFrame.initLeftSideTree();
@@ -184,7 +184,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
         initDistrictList(null);
     }
 
-    private void initDistrictList(Long selectedId) {
+    public void initDistrictList(Long selectedId) {
         try {
             List<District> districts = ServiceManager.getInstance().allDistricts();
             List<DistrictNumbers> items = districts.stream().map(DistrictNumbers::new).sorted().collect(Collectors.toList());
@@ -194,7 +194,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 districtNumbersF.setSelectedItem(hash.get(selectedId));
             }
         } catch (CommonException e) {
-            MainFrame.setStatusError("Нет доступа к участкам", e);
+            Launcher.mainFrame.setStatusError("Нет доступа к участкам", e);
         }
     }
 
@@ -209,7 +209,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
                 districtAddressF.setModel(new LinkedListModel<DistrictAddressItem>(collect));
                 printSize(collect.size());
             } catch (Exception e) {
-                MainFrame.setStatusError("Нет доступа к адресам участка", e);
+                Launcher.mainFrame.setStatusError("Нет доступа к адресам участка", e);
             }
         }
     }

@@ -6,7 +6,6 @@ import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DateUtilz;
 import com.del.ministry.utils.ListUtil;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.AppointmentsFilter;
 import com.del.ministry.view.models.DistrictNumbers;
@@ -35,8 +34,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
 import java.io.InputStream;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AppointmentsIForm extends ObservableIFrame {
@@ -52,6 +51,7 @@ public class AppointmentsIForm extends ObservableIFrame {
     private JTextField publisherFilterF, districtFilterF;
     private JCheckBox filterOnlyActive;
     private JComboBox<DistrictNumbers> districtNumbersF;
+    private AddressType defaultAddressType;
 
     public AppointmentsIForm() {
         super("Назначения участков", true, true, true, true);
@@ -144,10 +144,10 @@ public class AppointmentsIForm extends ObservableIFrame {
                 appointment.setPublisher(publisher);
                 ServiceManager.getInstance().createAppointment(appointment);
                 initTable();
-                MainFrame.setStatusText("Возвещатель " + publisher.getFIO() + " теперь обрабатывает участок " + district.getNumber());
+                Launcher.mainFrame.setStatusText("Возвещатель " + publisher.getFIO() + " теперь обрабатывает участок " + district.getNumber());
                 Launcher.mainFrame.initLeftSideTree();
             } catch (Exception e1) {
-                MainFrame.setStatusError("Не удалось назначить участок", e1);
+                Launcher.mainFrame.setStatusError("Не удалось назначить участок", e1);
             }
         });
 
@@ -163,14 +163,14 @@ public class AppointmentsIForm extends ObservableIFrame {
                         try {
                             ServiceManager.getInstance().updateAppointment(appointment);
                             initTable();
-                            MainFrame.setStatusText("Возвещатель " + appointment.getPublisher().getFIO() + " сдал участок " + appointment.getDistrict().getNumber());
+                            Launcher.mainFrame.setStatusText("Возвещатель " + appointment.getPublisher().getFIO() + " сдал участок " + appointment.getDistrict().getNumber());
                             Launcher.mainFrame.initLeftSideTree();
                         } catch (CommonException e1) {
-                            MainFrame.setStatusError("Не удалось сдать участок", e1);
+                            Launcher.mainFrame.setStatusError("Не удалось сдать участок", e1);
                         }
                     }
                 } else {
-                    MainFrame.setStatusError(
+                    Launcher.mainFrame.setStatusError(
                             String.format("Дата должна быть между %s и %s",
                                     DateUtilz.formatDate(appointment.getAssigned()),
                                     DateUtilz.formatDate(DateUtilz.today()))
@@ -197,7 +197,7 @@ public class AppointmentsIForm extends ObservableIFrame {
             this.districtNumbers = Maps.uniqueIndex(items, d -> d != null ? d.getDistrict().getId() : null);
             districtNumbersF.setModel(new SelectItemsModel<>(items));
         } catch (CommonException e) {
-            MainFrame.setStatusError("Нет доступа к участкам", e);
+            Launcher.mainFrame.setStatusError("Нет доступа к участкам", e);
         }
     }
 
@@ -207,7 +207,7 @@ public class AppointmentsIForm extends ObservableIFrame {
             List<PublisherItem> items = publishers.stream().map(publisher -> new PublisherItem(publisher, true)).collect(Collectors.toList());
             publishersF.setModel(new SelectItemsModel<>(items));
         } catch (Exception e) {
-            MainFrame.setStatusError("Нет доступа к возвещателям", e);
+            Launcher.mainFrame.setStatusError("Нет доступа к возвещателям", e);
         }
     }
 
@@ -242,7 +242,7 @@ public class AppointmentsIForm extends ObservableIFrame {
             MyListCellRenderer renderer = new MyListCellRenderer(ids);
             districtNumbersF.setRenderer(renderer);
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка доступа к данным о назначениях", e);
+            Launcher.mainFrame.setStatusError("Ошибка доступа к данным о назначениях", e);
         }
     }
 
@@ -298,30 +298,35 @@ public class AppointmentsIForm extends ObservableIFrame {
                     SimplePdfExporterConfiguration configuration = new SimplePdfExporterConfiguration();
                     exporter.setConfiguration(configuration);
                     exporter.exportReport();
-                    MainFrame.setStatusText("Файл сохранен: " + selectedFile.getCanonicalPath());
+                    Launcher.mainFrame.setStatusText("Файл сохранен: " + selectedFile.getCanonicalPath());
                 }
             } else {
-                MainFrame.setStatusError("Участок не имеет адресов");
+                Launcher.mainFrame.setStatusError("Участок не имеет адресов");
             }
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка формирования документа", e);
+            Launcher.mainFrame.setStatusError("Ошибка формирования документа", e);
         }
 
     }
 
     public String getAddressString(DistrictAddress address) {
         Building building = address.getBuilding();
+        String typeSuffix = "";
+        if (!Objects.deepEquals(address.getType().getId(), getDefaultAddressType().getId())) {
+            typeSuffix = " [" + address.getType().getName() + "]";
+        }
         return building.getCity().getName() +
                 ", ул." + building.getStreet().getName() +
                 ", д." + building.getNumber() +
-                ", кв." + address.getNumber();
+                ", кв." + address.getNumber() +
+                typeSuffix;
     }
 
     public void selectDistrict(Long id) {
         districtNumbersF.setSelectedItem(districtNumbers.get(id));
         table.getSelectionModel().clearSelection();
         appointmentCache.forEach((i, app) -> {
-            if (app.getDistrict().getId().equals(id)) table.getSelectionModel().setSelectionInterval(i, i);
+            if (app.getDistrict().getId().equals(id)) table.changeSelection(i, i, false, false);
         });
     }
 
@@ -350,5 +355,14 @@ public class AppointmentsIForm extends ObservableIFrame {
         }
     }
 
-
+    public AddressType getDefaultAddressType() {
+        if (defaultAddressType == null) {
+            try {
+                defaultAddressType = ServiceManager.getInstance().getDefaultAddressType();
+            } catch (Exception e) {
+                Launcher.mainFrame.setStatusError("Ошибка получения данных", e);
+            }
+        }
+        return defaultAddressType;
+    }
 }

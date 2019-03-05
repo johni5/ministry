@@ -82,7 +82,7 @@ public class PublishersIForm extends ObservableIFrame {
                 initTable();
             }
         } catch (Exception e1) {
-            MainFrame.setStatusError("Ошибка при удалении возвещателя", e1);
+            Launcher.mainFrame.setStatusError("Ошибка при удалении возвещателя", e1);
         }
     }
 
@@ -126,7 +126,7 @@ public class PublishersIForm extends ObservableIFrame {
                 i.dispose();
             } catch (Exception e1) {
                 ServiceManager.getInstance().clear();
-                MainFrame.setStatusError("Ошибка при сохранении данных возвещателя", e1);
+                Launcher.mainFrame.setStatusError("Ошибка при сохранении данных возвещателя", e1);
             }
         });
 
@@ -172,7 +172,7 @@ public class PublishersIForm extends ObservableIFrame {
             });
             table.setModel(tableModel);
         } catch (CommonException e) {
-            MainFrame.setStatusError("Ошибка доступа к данным о возвещателях", e);
+            Launcher.mainFrame.setStatusError("Ошибка доступа к данным о возвещателях", e);
         }
 
     }

@@ -1,4 +1,4 @@
-package com.del.ministry.view.models.tree;
+package com.del.ministry.view.models.tree.pub;
 
 import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.ListUtil;

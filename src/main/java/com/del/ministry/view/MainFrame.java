@@ -7,7 +7,10 @@ import com.del.ministry.view.actions.MainFrameActions;
 import com.del.ministry.view.actions.RestoreAction;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.forms.*;
-import com.del.ministry.view.models.tree.DistrictNode;
+import com.del.ministry.view.models.tree.pub.DistrictNode;
+import com.del.ministry.view.models.tree.stat.AreaNode;
+import com.del.ministry.view.models.tree.stat.BuildingNode;
+import com.del.ministry.view.models.tree.stat.StreetNode;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeModel;
@@ -15,8 +18,9 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainFrame extends JFrame {
 
@@ -25,9 +29,14 @@ public class MainFrame extends JFrame {
     private JMenu menuTerritory;
     private JMenu menuMinistry;
     private JTree leftSideTree;
+    private JTree leftSideStat;
     private ShowIFrameActionListener<AppointmentsIForm> appointmentsActionListener;
+    private ShowIFrameActionListener<DistrictListIForm> districtListActionListener;
+    private ShowIFrameActionListener<BuildingIForm> buildingActionListener;
 
-    private final static JLabel STATUS_TEXT = new JLabel();
+    //    private final static JLabel STATUS_TEXT = new JLabel();
+    private JTextPane logArea;
+    private JScrollPane logScroll;
 
     /**
      * Create the frame.
@@ -68,7 +77,8 @@ public class MainFrame extends JFrame {
         menuItem_2.addActionListener(new ShowIFrameActionListener<>(AreaIForm.class));
         menuItem_1.addActionListener(new ShowIFrameActionListener<>(StreetIForm.class));
         menuItem_3.addActionListener(new ShowIFrameActionListener<>(CityIForm.class));
-        menuItem_4.addActionListener(new ShowIFrameActionListener<>(BuildingIForm.class));
+        buildingActionListener = new ShowIFrameActionListener<>(BuildingIForm.class);
+        menuItem_4.addActionListener(buildingActionListener);
         menuItem_5.addActionListener(new ShowIFrameActionListener<>(AddressTypeIForm.class));
         menuItem_6.addActionListener(new ShowIFrameActionListener<>(BuildingTypeIForm.class));
 
@@ -79,7 +89,8 @@ public class MainFrame extends JFrame {
         menuMinistry.add(menuItem_2_1);
         menuMinistry.add(menuItemPublishers);
         menuMinistry.add(menuItemAppointments);
-        menuItem_2_1.addActionListener(new ShowIFrameActionListener<>(DistrictListIForm.class));
+        districtListActionListener = new ShowIFrameActionListener<>(DistrictListIForm.class);
+        menuItem_2_1.addActionListener(districtListActionListener);
         menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
 
         appointmentsActionListener = new ShowIFrameActionListener<>(AppointmentsIForm.class);
@@ -104,24 +115,36 @@ public class MainFrame extends JFrame {
         menuBar.add(menuService);
         menuBar.add(menuHelp);
 
-        JPanel statusBar = new JPanel(new BorderLayout(0, 0));
-        STATUS_TEXT.setFont(new Font("Tahoma", Font.PLAIN, 12));
-        STATUS_TEXT.setPreferredSize(new Dimension(100, 20));
-        statusBar.add(STATUS_TEXT);
+        logArea = new JTextPane();
+        logArea.setContentType("text/html");
+        logArea.setBackground(Color.DARK_GRAY);
+        logArea.setEditable(false);
+        logArea.setPreferredSize(new Dimension(logArea.getWidth(), 100));
+
+        logScroll = new JScrollPane();
+        logScroll.setViewportView(logArea);
 
         desktop.setBackground(Color.LIGHT_GRAY);
         desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JPanel leftSide = new JPanel(new BorderLayout());
 
-        getContentPane().add(statusBar, BorderLayout.SOUTH);
         leftSideTree = new JTree();
-        JScrollPane sp = new JScrollPane();
-        sp.setViewportView(leftSideTree);
-        leftSide.add(sp);
+        leftSideStat = new JTree();
 
+        JScrollPane sp1 = new JScrollPane();
+        JScrollPane sp2 = new JScrollPane();
+        sp1.setViewportView(leftSideTree);
+        sp2.setViewportView(leftSideStat);
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab("Участки", sp1);
+        tabbedPane.addTab("Адреса", sp2);
+        leftSide.add(tabbedPane);
 
-        JSplitPane p = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
-        getContentPane().add(p, BorderLayout.CENTER);
+        JSplitPane p1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
+        p1.setBorder(null);
+        JSplitPane p2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, logScroll);
+        p2.setResizeWeight(1);
+        getContentPane().add(p2, BorderLayout.CENTER);
 
         addWindowListener(new MainFrameActions(this));
 
@@ -130,10 +153,13 @@ public class MainFrame extends JFrame {
 
     public void initLeftSideTree() {
         try {
-            DefaultTreeModel model = new DefaultTreeModel(ServiceManager.getInstance().getDistrictTree());
-            leftSideTree.setModel(model);
+            DefaultTreeModel model1 = new DefaultTreeModel(ServiceManager.getInstance().getDistrictTree());
+            DefaultTreeModel model2 = new DefaultTreeModel(ServiceManager.getInstance().getBuildingTree());
+            leftSideTree.setModel(model1);
+            leftSideStat.setModel(model2);
+            expandAllNodes(leftSideStat, 0, leftSideStat.getRowCount());
             expandAllNodes(leftSideTree, 0, leftSideTree.getRowCount());
-            MouseListener ml = new MouseAdapter() {
+            leftSideTree.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
                     int selRow = leftSideTree.getRowForLocation(e.getX(), e.getY());
                     TreePath selPath = leftSideTree.getPathForLocation(e.getX(), e.getY());
@@ -150,8 +176,25 @@ public class MainFrame extends JFrame {
                         }
                     }
                 }
-            };
-            leftSideTree.addMouseListener(ml);
+            });
+            leftSideStat.addMouseListener(new MouseAdapter() {
+                public void mousePressed(MouseEvent e) {
+                    int selRow = leftSideStat.getRowForLocation(e.getX(), e.getY());
+                    TreePath selPath = leftSideStat.getPathForLocation(e.getX(), e.getY());
+                    if (selRow != -1) {
+                        if (e.getClickCount() == 1) {
+//                            mySingleClick(selRow, selPath);
+                        } else if (e.getClickCount() == 2) {
+//                            myDoubleClick(selRow, selPath);
+                            if (selPath != null && selPath.getLastPathComponent() instanceof BuildingNode) {
+                                BuildingNode node = (BuildingNode) selPath.getLastPathComponent();
+                                buildingActionListener.safeOpen();
+                                buildingActionListener.getInstance().setSelectedRow(node.getBuilding().getId());
+                            }
+                        }
+                    }
+                }
+            });
         } catch (Exception e) {
             setStatusError("Ошибка построения дерева участков", e);
         }
@@ -159,7 +202,9 @@ public class MainFrame extends JFrame {
 
     private void expandAllNodes(JTree tree, int startingIndex, int rowCount) {
         for (int i = startingIndex; i < rowCount; ++i) {
-            tree.expandRow(i);
+            if (!(tree.getPathForRow(i).getLastPathComponent() instanceof StreetNode)) {
+                tree.expandRow(i);
+            }
         }
         if (tree.getRowCount() != rowCount) {
             expandAllNodes(tree, rowCount, tree.getRowCount());
@@ -175,20 +220,26 @@ public class MainFrame extends JFrame {
         setStatusText("Соединение с базой данных установлено");
     }
 
-    public static void setStatusText(String message) {
-        STATUS_TEXT.setText(message);
-        STATUS_TEXT.setForeground(Color.BLUE);
+    public void setStatusText(String message) {
+        log(message, "white");
     }
 
-    public static void setStatusError(String message, Exception e) {
-        STATUS_TEXT.setText(message);
-        STATUS_TEXT.setForeground(Color.RED);
+    public void setStatusError(String message, Exception e) {
+        log(message, "red");
         Utils.getLogger().error(e.getMessage(), e);
     }
 
-    public static void setStatusError(String message) {
-        STATUS_TEXT.setText(message);
-        STATUS_TEXT.setForeground(Color.RED);
+    public void setStatusError(String message) {
+        log(message, "red");
+    }
+
+    private void log(String message, String color) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
+        logArea.setText("<font color=\"" + color + "\" size=\"3\" face=\"Tahoma\">" +
+                sdf.format(new Date()) + ": " +
+                message +
+                "</font><br/>" + logArea.getText());
+        logArea.setCaretPosition(0);
     }
 
     public void close() {

@@ -4,6 +4,7 @@ import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
+import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.filters.BuildingFilter;
@@ -11,13 +12,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -38,6 +35,7 @@ public class BuildingIForm extends ObservableIFrame {
     private JComboBox<BuildingType> bTypeCB;
     private JComboBox<Area> areaFilterCB;
     private JComboBox<Street> streetFilterCB;
+    private JScrollPane scrollPane;
 
     private JButton commitButton;
     private JButton revertButton;
@@ -56,7 +54,7 @@ public class BuildingIForm extends ObservableIFrame {
             getContentPane().add(panel, BorderLayout.CENTER);
             panel.setLayout(new BorderLayout(0, 0));
 
-            JScrollPane scrollPane = new JScrollPane();
+            scrollPane = new JScrollPane();
             panel.add(scrollPane, BorderLayout.CENTER);
 
             table = new JTable();
@@ -159,57 +157,35 @@ public class BuildingIForm extends ObservableIFrame {
             table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(streets))));
             table.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(buildingTypes))));
 
-            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-                @Override
-                public void valueChanged(ListSelectionEvent e) {
-                    deleteButton.setEnabled(true);
-                }
-            });
+            table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
 
-            deleteButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    buildingTableModel.removeItems(table.getSelectedRows());
-                }
-            });
-            commitButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    buildingTableModel.commitChanges();
-                }
-            });
-            revertButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    buildingTableModel.refresh();
-                }
-            });
-            btnNewButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String name = numberTF.getText();
-                    if (!Utils.isTrimmedEmpty(name)) {
-                        Building item = new Building();
-                        item.setNumber(name);
-                        item.setDoors((Integer) doorsTF.getValue());
-                        item.setFloors((Integer) floorsTF.getValue());
-                        item.setEntrances((Integer) entersTF.getValue());
-                        item.setCity((City) cityCB.getSelectedItem());
-                        item.setArea((Area) areaCB.getSelectedItem());
-                        item.setStreet((Street) streetCB.getSelectedItem());
-                        item.setType((BuildingType) bTypeCB.getSelectedItem());
-                        try {
-                            ServiceManager.getInstance().createBuilding(item);
-                            numberTF.setText("");
-                            buildingTableModel.refresh();
-                        } catch (Exception e1) {
-                            MainFrame.setStatusError("Ошибка сохранения записи!", e1);
-                        }
+            deleteButton.addActionListener(e -> buildingTableModel.removeItems(table.getSelectedRows()));
+            commitButton.addActionListener(e -> buildingTableModel.commitChanges());
+            revertButton.addActionListener(e -> buildingTableModel.refresh());
+            btnNewButton.addActionListener(e -> {
+                String name = numberTF.getText();
+                if (!Utils.isTrimmedEmpty(name)) {
+                    Building item1 = new Building();
+                    item1.setNumber(name);
+                    item1.setDoors((Integer) doorsTF.getValue());
+                    item1.setFloors((Integer) floorsTF.getValue());
+                    item1.setEntrances((Integer) entersTF.getValue());
+                    item1.setCity((City) cityCB.getSelectedItem());
+                    item1.setArea((Area) areaCB.getSelectedItem());
+                    item1.setStreet((Street) streetCB.getSelectedItem());
+                    item1.setType((BuildingType) bTypeCB.getSelectedItem());
+                    try {
+                        ServiceManager.getInstance().createBuilding(item1);
+                        numberTF.setText("");
+                        buildingTableModel.refresh();
+                        Launcher.mainFrame.initLeftSideTree();
+                    } catch (Exception e1) {
+                        Launcher.mainFrame.setStatusError("Ошибка сохранения записи!", e1);
                     }
                 }
             });
         } catch (CommonException e) {
-            MainFrame.setStatusError("Ошибка получения списка данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения списка данных!", e);
         }
     }
 
@@ -377,7 +353,7 @@ public class BuildingIForm extends ObservableIFrame {
                     data = ServiceManager.getInstance().findBuildings(filter);
                     commitButton.setEnabled(false);
                 } catch (Exception e) {
-                    MainFrame.setStatusError("Ошибка получения данных!", e);
+                    Launcher.mainFrame.setStatusError("Ошибка получения данных!", e);
                 }
             }
             return data;
@@ -388,8 +364,9 @@ public class BuildingIForm extends ObservableIFrame {
             for (Integer index : changed) {
                 try {
                     ServiceManager.getInstance().updateBuilding(getData().get(index));
+                    Launcher.mainFrame.initLeftSideTree();
                 } catch (Exception e) {
-                    MainFrame.setStatusError("Ошибка сохранения записи!", e);
+                    Launcher.mainFrame.setStatusError("Ошибка сохранения записи!", e);
                 }
             }
             refresh();
@@ -400,18 +377,32 @@ public class BuildingIForm extends ObservableIFrame {
             for (int row : rows) {
                 try {
                     ServiceManager.getInstance().deleteBuilding(getData().get(row).getId());
+                    Launcher.mainFrame.initLeftSideTree();
                 } catch (Exception e) {
-                    MainFrame.setStatusError("Ошибка удаления записи!", e);
+                    Launcher.mainFrame.setStatusError("Ошибка удаления записи!", e);
                 }
             }
             refresh();
         }
+
 
         public void refresh() {
             data = null;
             changed.clear();
             table.updateUI();
         }
+    }
+
+    public void setSelectedRow(Long buildingId) {
+        table.getSelectionModel().clearSelection();
+        for (int i = 0; i < table.getRowCount(); i++) {
+            Object id = table.getValueAt(i, 0);
+            if (Objects.deepEquals(id.toString(), buildingId.toString())) {
+                table.changeSelection(i, i, false, false);
+                break;
+            }
+        }
+
     }
 
 }

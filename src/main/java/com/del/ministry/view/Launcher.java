@@ -33,7 +33,7 @@ public class Launcher {
             mainFrame.setDefaultCloseOperation(EXIT_ON_CLOSE);
             mainFrame.setVisible(true);
             mainFrame.setLocale(new Locale("RU"));
-            MainFrame.setStatusText("Идет загрузка, подождите...");
+            mainFrame.setStatusText("Идет загрузка, подождите...");
         });
     }
 

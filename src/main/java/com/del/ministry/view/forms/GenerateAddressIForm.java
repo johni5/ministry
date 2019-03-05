@@ -126,7 +126,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
             int maxFloor = ServiceManager.getInstance().getMaxFloor(areas, bTypes);
             floorItems.addAll(Stream.iterate(1, i -> i + 1).limit(maxFloor).map(NumberItem::new).collect(Collectors.toList()));
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка получения данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения данных!", e);
         }
         maxFloorF.setModel(new SelectItemsModel<>(floorItems));
     }
@@ -136,7 +136,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
             List<Area> areas = ServiceManager.getInstance().findAreas();
             areaListF.setModel(new SelectItemsModel<>(areas.stream().map(AreaItem::new).sorted().collect(Collectors.toList())));
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка получения данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения данных!", e);
         }
     }
 
@@ -145,7 +145,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
             List<BuildingType> types = ServiceManager.getInstance().findBuildingTypes();
             bTypeListF.setModel(new SelectItemsModel<>(types.stream().map(BuildingTypeItem::new).sorted().collect(Collectors.toList())));
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка получения данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения данных!", e);
         }
     }
 
@@ -158,11 +158,11 @@ public class GenerateAddressIForm extends ObservableIFrame {
                 stream().map(typeItem -> typeItem.getType().getId()).
                 collect(Collectors.toList());
         if (ListUtil.isEmpty(areas)) {
-            MainFrame.setStatusError("Укажите районы!");
+            Launcher.mainFrame.setStatusError("Укажите районы!");
             return;
         }
         if (ListUtil.isEmpty(bTypes)) {
-            MainFrame.setStatusError("Укажите типы адресов!");
+            Launcher.mainFrame.setStatusError("Укажите типы адресов!");
             return;
         }
         filter.setAreaIds(areas);
@@ -184,7 +184,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
                     sorted(Comparator.comparingInt(o -> usedDoorsAtAll.get(o.getId()).size())).
                     collect(Collectors.toList());
             if (ListUtil.isEmpty(readyBuildings)) {
-                MainFrame.setStatusError("Нет свободных адресов!");
+                Launcher.mainFrame.setStatusError("Нет свободных адресов!");
                 return;
             }
             NumberItem manualMaxFloors = maxFloorF.getItemAt(maxFloorF.getSelectedIndex());
@@ -230,14 +230,14 @@ public class GenerateAddressIForm extends ObservableIFrame {
             }
 
             if (ready > 0) {
-                MainFrame.setStatusText("К участку было привязано адресов: " + ready);
+                Launcher.mainFrame.setStatusText("К участку было привязано адресов: " + ready);
                 Launcher.mainFrame.initLeftSideTree();
                 notifyObservers();
                 initBuildingsCount();
-            } else MainFrame.setStatusError("Не был привязан ни один адрес");
+            } else Launcher.mainFrame.setStatusError("Не был привязан ни один адрес");
 
         } catch (Exception e) {
-            MainFrame.setStatusError("Ошибка получения/сохранения данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения/сохранения данных!", e);
         }
 
     }
@@ -266,7 +266,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
                     ServiceManager.getInstance().countAvailableBuildings(areas, bTypes);
             buildingsL.setText("Доступно домов: " + count);
         } catch (CommonException e) {
-            MainFrame.setStatusError("Ошибка получения данных!", e);
+            Launcher.mainFrame.setStatusError("Ошибка получения данных!", e);
         }
     }
 

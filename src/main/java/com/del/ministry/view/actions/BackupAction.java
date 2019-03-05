@@ -22,10 +22,10 @@ public class BackupAction implements ActionListener {
                 String pwd = JOptionPane.showInputDialog(Launcher.mainFrame, "Задайте пароль", "Резервная копия базы данных", JOptionPane.QUESTION_MESSAGE);
                 if (!StringUtil.isTrimmedEmpty(pwd)) {
                     ServiceManager.getInstance().backupData(selectedFile.getCanonicalPath(), pwd);
-                    MainFrame.setStatusText("Данные успешно сохранены в файл '" + selectedFile.getCanonicalPath() + "'");
+                    Launcher.mainFrame.setStatusText("Данные успешно сохранены в файл '" + selectedFile.getCanonicalPath() + "'");
                 }
             } catch (Exception e1) {
-                MainFrame.setStatusError("Невозможно сохранить данные", e1);
+                Launcher.mainFrame.setStatusError("Невозможно сохранить данные", e1);
             }
         }
     }

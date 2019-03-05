@@ -1,4 +1,4 @@
-package com.del.ministry.view.models.tree;
+package com.del.ministry.view.models.tree.pub;
 
 import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.ListUtil;
@@ -64,10 +64,9 @@ public class AreaNode implements TreeNode, Comparable<AreaNode> {
 
     public DistrictNode find(Long districtId) {
         if (child != null) {
-            Optional<DistrictNode> first = child.stream().
+            return child.stream().
                     filter(node -> Objects.deepEquals(node.getDistrictId(), districtId)).
-                    findFirst();
-            if (first.isPresent()) return first.get();
+                    findFirst().orElse(null);
         }
         return null;
     }

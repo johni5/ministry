@@ -5,7 +5,7 @@ import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.filters.AppointmentsFilter;
 import com.del.ministry.view.filters.BuildingFilter;
-import com.del.ministry.view.models.tree.RootNode;
+import com.del.ministry.view.models.tree.pub.RootNode;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
@@ -252,6 +252,10 @@ public class ServiceManager implements EntityManagerProvider {
 
     public int getMaxFloor(List<Long> areas, List<Long> bTypes) throws CommonException {
         return getProvider().getBuildingDAO().maxFloor(areas, bTypes);
+    }
+
+    public com.del.ministry.view.models.tree.stat.RootNode getBuildingTree() throws CommonException {
+        return getProvider().getBuildingDAO().getTree();
     }
 
     /*DISTRICT ADDRESS*/

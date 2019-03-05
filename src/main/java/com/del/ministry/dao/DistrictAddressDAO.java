@@ -3,7 +3,7 @@ package com.del.ministry.dao;
 import com.del.ministry.db.Appointment;
 import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.Unchecked;
-import com.del.ministry.view.models.tree.RootNode;
+import com.del.ministry.view.models.tree.pub.RootNode;
 import com.google.common.collect.Maps;
 
 import java.util.List;
