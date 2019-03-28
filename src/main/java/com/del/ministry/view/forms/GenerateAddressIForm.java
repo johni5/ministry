@@ -43,7 +43,7 @@ public class GenerateAddressIForm extends ObservableIFrame {
      * Create the frame.
      */
     public GenerateAddressIForm() {
-        super("Заполнение участка случайными адресами", true, true, true, true);
+        super("Заполнение участка случайными адресами");
         setMinimumSize(new Dimension(550, 200));
 
         JPanel panel = new JPanel();

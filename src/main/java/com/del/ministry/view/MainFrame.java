@@ -8,7 +8,6 @@ import com.del.ministry.view.actions.RestoreAction;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.forms.*;
 import com.del.ministry.view.models.tree.pub.DistrictNode;
-import com.del.ministry.view.models.tree.stat.AreaNode;
 import com.del.ministry.view.models.tree.stat.BuildingNode;
 import com.del.ministry.view.models.tree.stat.StreetNode;
 
@@ -24,19 +23,16 @@ import java.util.Date;
 
 public class MainFrame extends JFrame {
 
-    public final JDesktopPane desktop = new JDesktopPane();
-
+    private JScrollPane mainPane;
     private JMenu menuTerritory;
     private JMenu menuMinistry;
     private JTree leftSideTree;
     private JTree leftSideStat;
-    private ShowIFrameActionListener<AppointmentsIForm> appointmentsActionListener;
-    private ShowIFrameActionListener<DistrictListIForm> districtListActionListener;
-    private ShowIFrameActionListener<BuildingIForm> buildingActionListener;
 
-    //    private final static JLabel STATUS_TEXT = new JLabel();
     private JTextPane logArea;
     private JScrollPane logScroll;
+
+    private MainForms mainForms;
 
     /**
      * Create the frame.
@@ -44,10 +40,13 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         setTitle("Система учета территории");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 800, 600);
+        setBounds(100, 100, 1024, 800);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
+
+        mainPane = new JScrollPane();
+        mainForms = new MainForms(mainPane);
 
         JMenu menu = new JMenu("Файл");
 
@@ -74,13 +73,12 @@ public class MainFrame extends JFrame {
         menuTerritory.add(new JSeparator());
         menuTerritory.add(menuItem_5);
         menuTerritory.add(menuItem_6);
-        menuItem_2.addActionListener(new ShowIFrameActionListener<>(AreaIForm.class));
-        menuItem_1.addActionListener(new ShowIFrameActionListener<>(StreetIForm.class));
-        menuItem_3.addActionListener(new ShowIFrameActionListener<>(CityIForm.class));
-        buildingActionListener = new ShowIFrameActionListener<>(BuildingIForm.class);
-        menuItem_4.addActionListener(buildingActionListener);
-        menuItem_5.addActionListener(new ShowIFrameActionListener<>(AddressTypeIForm.class));
-        menuItem_6.addActionListener(new ShowIFrameActionListener<>(BuildingTypeIForm.class));
+        menuItem_2.addActionListener(e -> mainForms.show(AreaIForm.class));
+        menuItem_1.addActionListener(e -> mainForms.show(StreetIForm.class));
+        menuItem_3.addActionListener(e -> mainForms.show(CityIForm.class));
+        menuItem_4.addActionListener(e -> mainForms.show(BuildingIForm.class));
+        menuItem_5.addActionListener(e -> mainForms.show(AddressTypeIForm.class));
+        menuItem_6.addActionListener(e -> mainForms.show(BuildingTypeIForm.class));
 
         menuMinistry = new JMenu("Служение");
         JMenuItem menuItem_2_1 = new JMenuItem("Участки");
@@ -89,12 +87,10 @@ public class MainFrame extends JFrame {
         menuMinistry.add(menuItem_2_1);
         menuMinistry.add(menuItemPublishers);
         menuMinistry.add(menuItemAppointments);
-        districtListActionListener = new ShowIFrameActionListener<>(DistrictListIForm.class);
-        menuItem_2_1.addActionListener(districtListActionListener);
-        menuItemPublishers.addActionListener(new ShowIFrameActionListener<>(PublishersIForm.class));
+        menuItem_2_1.addActionListener(e -> mainForms.show(DistrictListIForm.class));
+        menuItemPublishers.addActionListener(e -> mainForms.show(PublishersIForm.class));
 
-        appointmentsActionListener = new ShowIFrameActionListener<>(AppointmentsIForm.class);
-        menuItemAppointments.addActionListener(appointmentsActionListener);
+        menuItemAppointments.addActionListener(e -> mainForms.show(AppointmentsIForm.class));
 
         JMenu menuService = new JMenu("Сервис");
         JMenuItem menuItemRestore = new JMenuItem("Восстановление");
@@ -124,8 +120,6 @@ public class MainFrame extends JFrame {
         logScroll = new JScrollPane();
         logScroll.setViewportView(logArea);
 
-        desktop.setBackground(Color.LIGHT_GRAY);
-        desktop.setDragMode(JDesktopPane.OUTLINE_DRAG_MODE);
         JPanel leftSide = new JPanel(new BorderLayout());
 
         leftSideTree = new JTree();
@@ -140,7 +134,7 @@ public class MainFrame extends JFrame {
         tabbedPane.addTab("Адреса", sp2);
         leftSide.add(tabbedPane);
 
-        JSplitPane p1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, desktop);
+        JSplitPane p1 = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftSide, mainPane);
         p1.setBorder(null);
         JSplitPane p2 = new JSplitPane(JSplitPane.VERTICAL_SPLIT, p1, logScroll);
         p2.setResizeWeight(1);
@@ -170,8 +164,7 @@ public class MainFrame extends JFrame {
 //                            myDoubleClick(selRow, selPath);
                             if (selPath != null && selPath.getLastPathComponent() instanceof DistrictNode) {
                                 DistrictNode node = (DistrictNode) selPath.getLastPathComponent();
-                                appointmentsActionListener.safeOpen();
-                                appointmentsActionListener.getInstance().selectDistrict(node.getDistrictId());
+                                mainForms.show(AppointmentsIForm.class).selectDistrict(node.getDistrictId());
                             }
                         }
                     }
@@ -188,8 +181,7 @@ public class MainFrame extends JFrame {
 //                            myDoubleClick(selRow, selPath);
                             if (selPath != null && selPath.getLastPathComponent() instanceof BuildingNode) {
                                 BuildingNode node = (BuildingNode) selPath.getLastPathComponent();
-                                buildingActionListener.safeOpen();
-                                buildingActionListener.getInstance().setSelectedRow(node.getBuilding().getId());
+                                mainForms.show(BuildingIForm.class).setSelectedRow(node.getBuilding().getId());
                             }
                         }
                     }
@@ -213,11 +205,8 @@ public class MainFrame extends JFrame {
 
     public void setStatusDB_ERROR() {
         menuTerritory.setEnabled(false);
+        menuMinistry.setEnabled(false);
         setStatusText("Нет соединения с базой данных");
-    }
-
-    public void setStatusDB_OK() {
-        setStatusText("Соединение с базой данных установлено");
     }
 
     public void setStatusText(String message) {

@@ -6,8 +6,7 @@ import com.del.ministry.db.DistrictAddress;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.StringUtil;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.MainFrame;
-import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.actions.ShowIFrameActionListener;
 import com.del.ministry.view.models.DistrictAddressItem;
 import com.del.ministry.view.models.DistrictNumbers;
@@ -23,7 +22,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DistrictListIForm extends ObservableIFrame implements Observer {
+public class DistrictListIForm extends ObservableIPanel implements Observer {
 
     private JLabel districtSize;
     private JTextField newDistrictNumberF;
@@ -40,13 +39,8 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
      * Create the frame.
      */
     public DistrictListIForm() {
-        super("Участки", true, true, true, true);
         setMinimumSize(new Dimension(600, 400));
-//        setMaximumSize(new Dimension(1000, 600));
-
-        JPanel panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout(0, 0));
 
         districtNumbersF = new JComboBox<>();
         districtAddressF = new JList<>();
@@ -65,7 +59,7 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
 
         deleteAddressBtn.setEnabled(false);
 
-        panel.add(FormBuilder.create().
+        add(FormBuilder.create().
                         columns("50, 5, 80, 5, 50, pref:grow, 100, 150, 5, 100")
                         .rows("p, 5, p, 5, p, 5, p, 5, p, fill:100:grow, 5, p, p")
                         .padding(Paddings.DIALOG)
@@ -105,7 +99,6 @@ public class DistrictListIForm extends ObservableIFrame implements Observer {
         changeBtn.addActionListener(e -> renameDistrict());
 
         init();
-        pack();
     }
 
     private void init() {

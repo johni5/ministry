@@ -3,15 +3,11 @@ package com.del.ministry.view.actions;
 import javax.swing.*;
 import java.util.Observer;
 
-abstract public class ObservableIFrame extends JFrame {
+abstract public class ObservableIPanel extends JPanel {
 
     private IFrameObservable observable = new IFrameObservable();
 
-    public ObservableIFrame() {
-    }
-
-    public ObservableIFrame(String title) {
-        super(title);
+    public ObservableIPanel() {
     }
 
     public void addObserver(Observer observer) {

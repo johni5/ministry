@@ -5,8 +5,8 @@ import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DateUtilz;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.models.YesNoList;
 import com.del.ministry.view.models.table.ReadOnlyTableModel;
 import com.github.lgooddatepicker.components.DatePicker;
@@ -22,27 +22,24 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyVetoException;
 import java.util.Map;
 
-public class PublishersIForm extends ObservableIFrame {
+public class PublishersIForm extends ObservableIPanel {
 
     private JTable table;
 
     public PublishersIForm() {
-        super("Возвещатели", true, true, true, true);
         setMinimumSize(new Dimension(600, 200));
 
-        JPanel panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout(0, 0));
 
         JScrollPane scrollPane = new JScrollPane();
-        panel.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         table = new JTable();
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         scrollPane.setViewportView(table);
 
         JPanel controlPanel = new JPanel();
-        getContentPane().add(controlPanel, BorderLayout.SOUTH);
+        add(controlPanel, BorderLayout.SOUTH);
         JButton addBtn = new JButton("Создать");
         JButton editBtn = new JButton("Редактировать");
         JButton delBtn = new JButton("Удалить");
@@ -59,17 +56,15 @@ public class PublishersIForm extends ObservableIFrame {
         });
 
         initTable();
-
-        pack();
     }
 
     private void addEvent(ActionEvent e) {
-        JInternalFrame i = new JInternalFrame("Добавить нового возвещателя", false, true, false, false);
+        JFrame i = new JFrame("Добавить нового возвещателя");
         showPersonalForm(null, i);
     }
 
     private void editEvent(ActionEvent e) {
-        JInternalFrame i = new JInternalFrame("Редактировать возвещателя", false, true, false, false);
+        JFrame i = new JFrame("Редактировать возвещателя");
         showPersonalForm(publishers.get(table.getSelectedRow()), i);
     }
 
@@ -86,9 +81,8 @@ public class PublishersIForm extends ObservableIFrame {
         }
     }
 
-    private void showPersonalForm(Publisher publisher, JInternalFrame i) {
+    private void showPersonalForm(Publisher publisher, JFrame i) {
         i.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-        Launcher.mainFrame.desktop.add(i);
         JButton cancelBtn = new JButton("Отмена");
         JButton saveBtn = new JButton("Сохранить");
         JTextField firstNameF = new JTextField();
@@ -147,11 +141,7 @@ public class PublishersIForm extends ObservableIFrame {
 
         i.pack();
         i.setVisible(true);
-        try {
-            i.setSelected(true);
-        } catch (PropertyVetoException e) {
-            //
-        }
+        i.setLocationRelativeTo(this);
     }
 
     private Map<Integer, Publisher> publishers;

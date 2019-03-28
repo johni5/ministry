@@ -5,6 +5,7 @@ import com.del.ministry.db.AddressType;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class AddressTypeIForm extends ObservableIFrame {
+public class AddressTypeIForm extends ObservableIPanel {
 
     private JTable table;
     private AddressTypeTableModel addressTypeTableModel;
@@ -34,22 +35,19 @@ public class AddressTypeIForm extends ObservableIFrame {
      * Create the frame.
      */
     public AddressTypeIForm() {
-        super("Тип адреса", true, true, true, true);
         setMinimumSize(new Dimension(600, 400));
         setBounds(100, 100, 600, 400);
 
-        JPanel panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout(0, 0));
 
         JScrollPane scrollPane = new JScrollPane();
-        panel.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         table = new JTable();
         scrollPane.setViewportView(table);
 
         JPanel panel_1 = new JPanel();
-        panel.add(panel_1, BorderLayout.SOUTH);
+        add(panel_1, BorderLayout.SOUTH);
         GridBagLayout gbl_panel_1 = new GridBagLayout();
         gbl_panel_1.columnWidths = new int[]{100, 400, 100};
         panel_1.setLayout(gbl_panel_1);
@@ -95,7 +93,7 @@ public class AddressTypeIForm extends ObservableIFrame {
         panel_1.add(btnNewButton, gbc_btnNewButton);
 
         JPanel panel_2 = new JPanel();
-        panel.add(panel_2, BorderLayout.NORTH);
+        add(panel_2, BorderLayout.NORTH);
 
         commitButton = new JButton("Сохранить");
         revertButton = new JButton("Отменить");
@@ -112,48 +110,25 @@ public class AddressTypeIForm extends ObservableIFrame {
         table.getColumnModel().getColumn(2).setPreferredWidth(100);
         table.getColumnModel().getColumn(3).setPreferredWidth(100);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                deleteButton.setEnabled(true);
-            }
-        });
+        table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
 
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addressTypeTableModel.removeItems(table.getSelectedRows());
-            }
-        });
-        commitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addressTypeTableModel.commitChanges();
-            }
-        });
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addressTypeTableModel.refresh();
-            }
-        });
-        btnNewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = nameTF.getText();
-                String shortName = shortNameTF.getText();
-                if (!Utils.isTrimmedEmpty(name) && !Utils.isTrimmedEmpty(shortName)) {
-                    AddressType addressType = new AddressType();
-                    addressType.setName(name);
-                    addressType.setShortName(shortName);
-                    try {
-                        ServiceManager.getInstance().createAddressType(addressType);
-                        nameTF.setText("");
-                        shortNameTF.setText("");
-                        addressTypeTableModel.refresh();
-                    } catch (CommonException e1) {
-                        Utils.getLogger().error(e1.getMessage(), e1);
-                    }
+        deleteButton.addActionListener(e -> addressTypeTableModel.removeItems(table.getSelectedRows()));
+        commitButton.addActionListener(e -> addressTypeTableModel.commitChanges());
+        revertButton.addActionListener(e -> addressTypeTableModel.refresh());
+        btnNewButton.addActionListener(e -> {
+            String name = nameTF.getText();
+            String shortName = shortNameTF.getText();
+            if (!Utils.isTrimmedEmpty(name) && !Utils.isTrimmedEmpty(shortName)) {
+                AddressType addressType = new AddressType();
+                addressType.setName(name);
+                addressType.setShortName(shortName);
+                try {
+                    ServiceManager.getInstance().createAddressType(addressType);
+                    nameTF.setText("");
+                    shortNameTF.setText("");
+                    addressTypeTableModel.refresh();
+                } catch (CommonException e1) {
+                    Utils.getLogger().error(e1.getMessage(), e1);
                 }
             }
         });

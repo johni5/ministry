@@ -7,6 +7,7 @@ import com.del.ministry.utils.Utils;
 import com.del.ministry.view.Launcher;
 import com.del.ministry.view.MainFrame;
 import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.filters.BuildingFilter;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -20,7 +21,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 
-public class BuildingIForm extends ObservableIFrame {
+public class BuildingIForm extends ObservableIPanel {
 
     private JTable table;
     private BuildingTableModel buildingTableModel;
@@ -45,17 +46,14 @@ public class BuildingIForm extends ObservableIFrame {
      * Create the frame.
      */
     public BuildingIForm() {
-        super("Строение", true, true, true, true);
         setMinimumSize(new Dimension(900, 400));
         setBounds(100, 100, 900, 400);
 
         try {
-            JPanel panel = new JPanel();
-            getContentPane().add(panel, BorderLayout.CENTER);
-            panel.setLayout(new BorderLayout(0, 0));
+            setLayout(new BorderLayout(0, 0));
 
             scrollPane = new JScrollPane();
-            panel.add(scrollPane, BorderLayout.CENTER);
+            add(scrollPane, BorderLayout.CENTER);
 
             table = new JTable();
             scrollPane.setViewportView(table);
@@ -66,7 +64,7 @@ public class BuildingIForm extends ObservableIFrame {
             filterPanel.setLayout(filterPanelLayout);
 
             JPanel panel_1 = new JPanel();
-            panel.add(panel_1, BorderLayout.SOUTH);
+            add(panel_1, BorderLayout.SOUTH);
             GridBagLayout gbl_panel_1 = new GridBagLayout();
             gbl_panel_1.columnWidths = new int[]{100, 200, 20, 100, 200, 80};
             panel_1.setLayout(gbl_panel_1);
@@ -128,7 +126,7 @@ public class BuildingIForm extends ObservableIFrame {
             filterPanel.add(streetFilterCB, createGridBagConstraints(1, 1));
 
             JPanel panel_2 = new JPanel();
-            panel.add(panel_2, BorderLayout.NORTH);
+            add(panel_2, BorderLayout.NORTH);
             panel_2.add(filterPanel);
 
             commitButton = new JButton("Сохранить");

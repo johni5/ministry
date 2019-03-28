@@ -6,7 +6,7 @@ import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DateUtilz;
 import com.del.ministry.utils.ListUtil;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.filters.AppointmentsFilter;
 import com.del.ministry.view.models.DistrictNumbers;
 import com.del.ministry.view.models.PublisherItem;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AppointmentsIForm extends ObservableIFrame {
+public class AppointmentsIForm extends ObservableIPanel {
 
     final static Logger logger = Logger.getLogger(AppointmentsIForm.class);
 
@@ -54,10 +54,8 @@ public class AppointmentsIForm extends ObservableIFrame {
     private AddressType defaultAddressType;
 
     public AppointmentsIForm() {
-        super("Назначения участков", true, true, true, true);
         setMinimumSize(new Dimension(600, 400));
 
-        JPanel panel = new JPanel();
         JScrollPane scrollPane = new JScrollPane();
         table = new JTable();
         JPanel controlPanel = new JPanel(new BorderLayout(0, 0));
@@ -84,14 +82,13 @@ public class AppointmentsIForm extends ObservableIFrame {
         JComboBox<PublisherItem> publishersF = new JComboBox<>();
         filterOnlyActive = new JCheckBox("Назначен в настоящее время", true);
 
-        panel.setLayout(new BorderLayout(0, 0));
-        panel.add(scrollPane, BorderLayout.CENTER);
+        setLayout(new BorderLayout(0, 0));
+        add(scrollPane, BorderLayout.CENTER);
         scrollPane.setViewportView(table);
         table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        getContentPane().add(panel, BorderLayout.CENTER);
-        getContentPane().add(controlPanel, BorderLayout.SOUTH);
-        getContentPane().add(filterPanel, BorderLayout.NORTH);
+        add(controlPanel, BorderLayout.SOUTH);
+        add(filterPanel, BorderLayout.NORTH);
 
         filterPanel.add(FormBuilder.create().
                 columns("100, 5, 20, 5, 150, 5, 20, 5, 150")
@@ -185,8 +182,6 @@ public class AppointmentsIForm extends ObservableIFrame {
         initDistrictList();
         initPublishersList(publishersF);
         initTable();
-
-        pack();
 
     }
 

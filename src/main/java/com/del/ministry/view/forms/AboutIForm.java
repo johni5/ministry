@@ -11,7 +11,7 @@ import java.awt.*;
 public class AboutIForm extends ObservableIFrame {
 
     public AboutIForm() {
-        super("О программе", false, true, false, false);
+        super("О программе");
 
         JPanel panel = new JPanel();
         getContentPane().add(panel, BorderLayout.CENTER);

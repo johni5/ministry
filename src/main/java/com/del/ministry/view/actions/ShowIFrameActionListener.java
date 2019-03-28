@@ -43,13 +43,12 @@ public class ShowIFrameActionListener<E extends ObservableIFrame> implements Act
 
     public void safeOpen() {
         try {
-            if (instance == null || instance.isClosed() || !instance.isVisible()) {
+            if (instance == null || !instance.isVisible()) {
                 instance = eClass.newInstance();
-                instance.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
-                Launcher.mainFrame.desktop.add(instance);
+                instance.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                instance.setLocationRelativeTo(Launcher.mainFrame);
             }
             instance.setVisible(true);
-            instance.setSelected(true);
             if (listener != null) {
                 listener.invoke(instance);
             }

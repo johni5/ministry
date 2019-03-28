@@ -29,7 +29,7 @@ public class MainFrameActions implements WindowListener {
         logger.info("Init DB connection...");
         try {
             ServiceManager.getInstance();
-            mainFrame.setStatusDB_OK();
+            mainFrame.setStatusText("Соединение с базой данных установлено");
             logger.info("... success.");
         } catch (Exception e1) {
             logger.info("... error connection to data base", e1);

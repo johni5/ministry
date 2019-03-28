@@ -4,23 +4,19 @@ import com.del.ministry.dao.ServiceManager;
 import com.del.ministry.db.Area;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
-import com.del.ministry.view.actions.ObservableIFrame;
+import com.del.ministry.view.actions.ObservableIPanel;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-public class AreaIForm extends ObservableIFrame {
+public class AreaIForm extends ObservableIPanel {
 
     private JTable table;
     private AreaTableModel areaTableModel;
@@ -33,22 +29,19 @@ public class AreaIForm extends ObservableIFrame {
      * Create the frame.
      */
     public AreaIForm() {
-        super("Район", true, true, true, true);
         setMinimumSize(new Dimension(600, 400));
         setBounds(100, 100, 600, 400);
 
-        JPanel panel = new JPanel();
-        getContentPane().add(panel, BorderLayout.CENTER);
-        panel.setLayout(new BorderLayout(0, 0));
+        setLayout(new BorderLayout(0, 0));
 
         JScrollPane scrollPane = new JScrollPane();
-        panel.add(scrollPane, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
 
         table = new JTable();
         scrollPane.setViewportView(table);
 
         JPanel panel_1 = new JPanel();
-        panel.add(panel_1, BorderLayout.SOUTH);
+        add(panel_1, BorderLayout.SOUTH);
         GridBagLayout gbl_panel_1 = new GridBagLayout();
         gbl_panel_1.columnWidths = new int[]{100, 400, 100};
         panel_1.setLayout(gbl_panel_1);
@@ -78,7 +71,7 @@ public class AreaIForm extends ObservableIFrame {
         panel_1.add(btnNewButton, gbc_btnNewButton);
 
         JPanel panel_2 = new JPanel();
-        panel.add(panel_2, BorderLayout.NORTH);
+        add(panel_2, BorderLayout.NORTH);
 
         commitButton = new JButton("Сохранить");
         revertButton = new JButton("Отменить");
@@ -94,45 +87,22 @@ public class AreaIForm extends ObservableIFrame {
         table.getColumnModel().getColumn(1).setPreferredWidth(400);
         table.getColumnModel().getColumn(2).setPreferredWidth(100);
 
-        table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                deleteButton.setEnabled(true);
-            }
-        });
+        table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
 
-        deleteButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                areaTableModel.removeItems(table.getSelectedRows());
-            }
-        });
-        commitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                areaTableModel.commitChanges();
-            }
-        });
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                areaTableModel.refresh();
-            }
-        });
-        btnNewButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String name = textField.getText();
-                if (!Utils.isTrimmedEmpty(name)) {
-                    Area area = new Area();
-                    area.setName(name);
-                    try {
-                        ServiceManager.getInstance().createArea(area);
-                        textField.setText("");
-                        areaTableModel.refresh();
-                    } catch (CommonException e1) {
-                        Utils.getLogger().error(e1.getMessage(), e1);
-                    }
+        deleteButton.addActionListener(e -> areaTableModel.removeItems(table.getSelectedRows()));
+        commitButton.addActionListener(e -> areaTableModel.commitChanges());
+        revertButton.addActionListener(e -> areaTableModel.refresh());
+        btnNewButton.addActionListener(e -> {
+            String name = textField.getText();
+            if (!Utils.isTrimmedEmpty(name)) {
+                Area area = new Area();
+                area.setName(name);
+                try {
+                    ServiceManager.getInstance().createArea(area);
+                    textField.setText("");
+                    areaTableModel.refresh();
+                } catch (CommonException e1) {
+                    Utils.getLogger().error(e1.getMessage(), e1);
                 }
             }
         });

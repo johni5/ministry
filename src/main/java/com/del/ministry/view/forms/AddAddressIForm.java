@@ -51,7 +51,7 @@ public class AddAddressIForm extends ObservableIFrame {
      * Create the frame.
      */
     public AddAddressIForm() {
-        super("Редактировать участок", true, true, true, true);
+        super("Редактировать участок");
         setMinimumSize(new Dimension(500, 200));
 
         JPanel panel = new JPanel();
