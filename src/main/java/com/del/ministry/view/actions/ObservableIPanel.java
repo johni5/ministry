@@ -24,4 +24,7 @@ abstract public class ObservableIPanel extends JPanel {
         observable.notifyObservers(arg);
     }
 
+    public void beforeShow() {
+        //
+    }
 }

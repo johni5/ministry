@@ -44,6 +44,7 @@ public class MainForms {
 
     public <T extends ObservableIPanel> T show(Class<T> aClass) {
         T view = find(aClass);
+        view.beforeShow();
         rootView.setViewportView(view);
         ServiceManager.getInstance().clear();
         return view;

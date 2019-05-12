@@ -8,6 +8,7 @@ import com.google.common.collect.Maps;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
 
@@ -52,6 +53,7 @@ public class DistrictAddressDAO extends AbstractDAO<DistrictAddress, Long> {
                         "           inner join b.city c " +
                         "           inner join da.district d " +
                         "       group by c.id, c.name, a.id, a.name, d.id, d.number " +
+                        "       order by d.number " +
                         "       ")
                 .getResultList();
         RootNode rootNode = new RootNode();

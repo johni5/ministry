@@ -5,8 +5,6 @@ import com.del.ministry.db.*;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.MainFrame;
-import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.filters.BuildingFilter;
 import com.google.common.collect.Lists;
@@ -49,142 +47,159 @@ public class BuildingIForm extends ObservableIPanel {
         setMinimumSize(new Dimension(900, 400));
         setBounds(100, 100, 900, 400);
 
+        setLayout(new BorderLayout(0, 0));
+
+        scrollPane = new JScrollPane();
+        add(scrollPane, BorderLayout.CENTER);
+
+        table = new JTable();
+        scrollPane.setViewportView(table);
+
+        JPanel filterPanel = new JPanel();
+        GridBagLayout filterPanelLayout = new GridBagLayout();
+        filterPanelLayout.columnWidths = new int[]{100, 200};
+        filterPanel.setLayout(filterPanelLayout);
+
+        JPanel panel_1 = new JPanel();
+        add(panel_1, BorderLayout.SOUTH);
+        GridBagLayout gbl_panel_1 = new GridBagLayout();
+        gbl_panel_1.columnWidths = new int[]{100, 200, 20, 100, 200, 80};
+        panel_1.setLayout(gbl_panel_1);
+
+        numberTF = new JTextField();
+        doorsTF = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
+        entersTF = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
+        floorsTF = new JSpinner(new SpinnerNumberModel(1, -2, 100, 1));
+
+        cityCB = new JComboBox<>();
+        areaCB = new JComboBox<>();
+        streetCB = new JComboBox<>();
+        bTypeCB = new JComboBox<>();
+        areaFilterCB = new JComboBox<>();
+        streetFilterCB = new JComboBox<>();
+
+        panel_1.add(new JLabel("Номер дома"), createGridBagConstraints(0, 0));
+        panel_1.add(numberTF, createGridBagConstraints(1, 0));
+
+        panel_1.add(new JLabel("Дверей"), createGridBagConstraints(3, 0));
+        panel_1.add(doorsTF, createGridBagConstraints(4, 0));
+
+        panel_1.add(new JLabel("Подъездов"), createGridBagConstraints(0, 1));
+        panel_1.add(entersTF, createGridBagConstraints(1, 1));
+
+        panel_1.add(new JLabel("Этажей"), createGridBagConstraints(3, 1));
+        panel_1.add(floorsTF, createGridBagConstraints(4, 1));
+
+        panel_1.add(new JLabel("Город"), createGridBagConstraints(0, 2));
+        panel_1.add(cityCB, createGridBagConstraints(1, 2));
+
+        panel_1.add(new JLabel("Район"), createGridBagConstraints(3, 2));
+        panel_1.add(areaCB, createGridBagConstraints(4, 2));
+
+        panel_1.add(new JLabel("Улица"), createGridBagConstraints(0, 3));
+        panel_1.add(streetCB, createGridBagConstraints(1, 3));
+
+        panel_1.add(new JLabel("Тип"), createGridBagConstraints(3, 3));
+        panel_1.add(bTypeCB, createGridBagConstraints(4, 3));
+
+        JButton btnNewButton = new JButton("Создать");
+        panel_1.add(btnNewButton, createGridBagConstraints(3, 4));
+
+        filterPanel.add(new JLabel("Район"), createGridBagConstraints(0, 0));
+        filterPanel.add(areaFilterCB, createGridBagConstraints(1, 0));
+        filterPanel.add(new JLabel("Улица"), createGridBagConstraints(0, 1));
+        filterPanel.add(streetFilterCB, createGridBagConstraints(1, 1));
+
+        JPanel panel_2 = new JPanel();
+        add(panel_2, BorderLayout.NORTH);
+        panel_2.add(filterPanel);
+
+        commitButton = new JButton("Сохранить");
+        revertButton = new JButton("Обновить");
+        deleteButton = new JButton("Удалить");
+        panel_2.add(commitButton);
+        panel_2.add(revertButton);
+        panel_2.add(deleteButton);
+        deleteButton.setEnabled(false);
+
+        buildingTableModel = new BuildingTableModel();
+        table.setModel(buildingTableModel);
+        table.getColumnModel().getColumn(0).setPreferredWidth(50);
+        table.getColumnModel().getColumn(1).setPreferredWidth(80);
+        table.getColumnModel().getColumn(2).setPreferredWidth(100);
+        table.getColumnModel().getColumn(3).setPreferredWidth(130);
+        table.getColumnModel().getColumn(4).setPreferredWidth(50);
+        table.getColumnModel().getColumn(5).setPreferredWidth(100);
+        table.getColumnModel().getColumn(6).setPreferredWidth(80);
+        table.getColumnModel().getColumn(7).setPreferredWidth(80);
+        table.getColumnModel().getColumn(8).setPreferredWidth(80);
+        table.getColumnModel().getColumn(9).setPreferredWidth(80);
+
+        table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
+
+        deleteButton.addActionListener(e -> buildingTableModel.removeItems(table.getSelectedRows()));
+        commitButton.addActionListener(e -> buildingTableModel.commitChanges());
+        revertButton.addActionListener(e -> buildingTableModel.refresh());
+        btnNewButton.addActionListener(e -> {
+            String name = numberTF.getText();
+            if (!Utils.isTrimmedEmpty(name)) {
+                Building item1 = new Building();
+                item1.setNumber(name);
+                item1.setDoors((Integer) doorsTF.getValue());
+                item1.setFloors((Integer) floorsTF.getValue());
+                item1.setEntrances((Integer) entersTF.getValue());
+                item1.setCity((City) cityCB.getSelectedItem());
+                item1.setArea((Area) areaCB.getSelectedItem());
+                item1.setStreet((Street) streetCB.getSelectedItem());
+                item1.setType((BuildingType) bTypeCB.getSelectedItem());
+                try {
+                    ServiceManager.getInstance().createBuilding(item1);
+                    numberTF.setText("");
+                    buildingTableModel.refresh();
+                    Launcher.mainFrame.initLeftSideTree();
+                } catch (Exception e1) {
+                    Launcher.mainFrame.setStatusError("Ошибка сохранения записи!", e1);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void beforeShow() {
         try {
-            setLayout(new BorderLayout(0, 0));
+            ServiceManager serviceManager = ServiceManager.getInstance();
+            List<Street> streets = serviceManager.findStreets();
+            List<City> cites = serviceManager.findCites();
+            List<Area> areas = serviceManager.findAreas();
+            List<BuildingType> buildingTypes = serviceManager.findBuildingTypes();
 
-            scrollPane = new JScrollPane();
-            add(scrollPane, BorderLayout.CENTER);
-
-            table = new JTable();
-            scrollPane.setViewportView(table);
-
-            JPanel filterPanel = new JPanel();
-            GridBagLayout filterPanelLayout = new GridBagLayout();
-            filterPanelLayout.columnWidths = new int[]{100, 200};
-            filterPanel.setLayout(filterPanelLayout);
-
-            JPanel panel_1 = new JPanel();
-            add(panel_1, BorderLayout.SOUTH);
-            GridBagLayout gbl_panel_1 = new GridBagLayout();
-            gbl_panel_1.columnWidths = new int[]{100, 200, 20, 100, 200, 80};
-            panel_1.setLayout(gbl_panel_1);
-
-            numberTF = new JTextField();
-            doorsTF = new JSpinner(new SpinnerNumberModel(1, 1, 1000, 1));
-            entersTF = new JSpinner(new SpinnerNumberModel(1, 1, 100, 1));
-            floorsTF = new JSpinner(new SpinnerNumberModel(1, -2, 100, 1));
-            List<Street> streets = ServiceManager.getInstance().findStreets();
-            List<City> cites = ServiceManager.getInstance().findCites();
-            List<Area> areas = ServiceManager.getInstance().findAreas();
-            List<BuildingType> buildingTypes = ServiceManager.getInstance().findBuildingTypes();
-
-            cityCB = new JComboBox<>(new Vector<>(cites));
-            areaCB = new JComboBox<>(new Vector<>(areas));
-            streetCB = new JComboBox<>(new Vector<>(streets));
-            bTypeCB = new JComboBox<>(new Vector<>(buildingTypes));
-            areaFilterCB = new JComboBox<>(new Vector<>(areas));
             Area item = new Area();
             item.setName("...");
-            areaFilterCB.addItem(item);
-            areaFilterCB.setSelectedItem(item);
-            streetFilterCB = new JComboBox<>(new Vector<>(streets));
+            areas.add(0, item);
             Street street = new Street();
             street.setName("...");
-            streetFilterCB.addItem(street);
+            streets.add(0, street);
+
+            cityCB.setModel(new DefaultComboBoxModel<>(new Vector<>(cites)));
+            areaCB.setModel(new DefaultComboBoxModel<>(new Vector<>(areas)));
+            streetCB.setModel(new DefaultComboBoxModel<>(new Vector<>(streets)));
+            bTypeCB.setModel(new DefaultComboBoxModel<>(new Vector<>(buildingTypes)));
+            areaFilterCB.setModel(new DefaultComboBoxModel<>(new Vector<>(areas)));
+            streetFilterCB.setModel(new DefaultComboBoxModel<>(new Vector<>(streets)));
+
+            areaFilterCB.setSelectedItem(item);
             streetFilterCB.setSelectedItem(street);
-
-            panel_1.add(new JLabel("Номер дома"), createGridBagConstraints(0, 0));
-            panel_1.add(numberTF, createGridBagConstraints(1, 0));
-
-            panel_1.add(new JLabel("Дверей"), createGridBagConstraints(3, 0));
-            panel_1.add(doorsTF, createGridBagConstraints(4, 0));
-
-            panel_1.add(new JLabel("Подъездов"), createGridBagConstraints(0, 1));
-            panel_1.add(entersTF, createGridBagConstraints(1, 1));
-
-            panel_1.add(new JLabel("Этажей"), createGridBagConstraints(3, 1));
-            panel_1.add(floorsTF, createGridBagConstraints(4, 1));
-
-            panel_1.add(new JLabel("Город"), createGridBagConstraints(0, 2));
-            panel_1.add(cityCB, createGridBagConstraints(1, 2));
-
-            panel_1.add(new JLabel("Район"), createGridBagConstraints(3, 2));
-            panel_1.add(areaCB, createGridBagConstraints(4, 2));
-
-            panel_1.add(new JLabel("Улица"), createGridBagConstraints(0, 3));
-            panel_1.add(streetCB, createGridBagConstraints(1, 3));
-
-            panel_1.add(new JLabel("Тип"), createGridBagConstraints(3, 3));
-            panel_1.add(bTypeCB, createGridBagConstraints(4, 3));
-
-            JButton btnNewButton = new JButton("Создать");
-            panel_1.add(btnNewButton, createGridBagConstraints(3, 4));
-
-            filterPanel.add(new JLabel("Район"), createGridBagConstraints(0, 0));
-            filterPanel.add(areaFilterCB, createGridBagConstraints(1, 0));
-            filterPanel.add(new JLabel("Улица"), createGridBagConstraints(0, 1));
-            filterPanel.add(streetFilterCB, createGridBagConstraints(1, 1));
-
-            JPanel panel_2 = new JPanel();
-            add(panel_2, BorderLayout.NORTH);
-            panel_2.add(filterPanel);
-
-            commitButton = new JButton("Сохранить");
-            revertButton = new JButton("Отменить");
-            deleteButton = new JButton("Удалить");
-            panel_2.add(commitButton);
-            panel_2.add(revertButton);
-            panel_2.add(deleteButton);
-            deleteButton.setEnabled(false);
-
-            buildingTableModel = new BuildingTableModel();
-            table.setModel(buildingTableModel);
-            table.getColumnModel().getColumn(0).setPreferredWidth(50);
-            table.getColumnModel().getColumn(1).setPreferredWidth(80);
-            table.getColumnModel().getColumn(2).setPreferredWidth(100);
-            table.getColumnModel().getColumn(3).setPreferredWidth(130);
-            table.getColumnModel().getColumn(4).setPreferredWidth(50);
-            table.getColumnModel().getColumn(5).setPreferredWidth(100);
-            table.getColumnModel().getColumn(6).setPreferredWidth(80);
-            table.getColumnModel().getColumn(7).setPreferredWidth(80);
-            table.getColumnModel().getColumn(8).setPreferredWidth(80);
-            table.getColumnModel().getColumn(9).setPreferredWidth(80);
 
             table.getColumnModel().getColumn(1).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(cites))));
             table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(areas))));
             table.getColumnModel().getColumn(3).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(streets))));
             table.getColumnModel().getColumn(5).setCellEditor(new DefaultCellEditor(new JComboBox<>(new Vector<>(buildingTypes))));
 
-            table.getSelectionModel().addListSelectionListener(e -> deleteButton.setEnabled(true));
-
-            deleteButton.addActionListener(e -> buildingTableModel.removeItems(table.getSelectedRows()));
-            commitButton.addActionListener(e -> buildingTableModel.commitChanges());
-            revertButton.addActionListener(e -> buildingTableModel.refresh());
-            btnNewButton.addActionListener(e -> {
-                String name = numberTF.getText();
-                if (!Utils.isTrimmedEmpty(name)) {
-                    Building item1 = new Building();
-                    item1.setNumber(name);
-                    item1.setDoors((Integer) doorsTF.getValue());
-                    item1.setFloors((Integer) floorsTF.getValue());
-                    item1.setEntrances((Integer) entersTF.getValue());
-                    item1.setCity((City) cityCB.getSelectedItem());
-                    item1.setArea((Area) areaCB.getSelectedItem());
-                    item1.setStreet((Street) streetCB.getSelectedItem());
-                    item1.setType((BuildingType) bTypeCB.getSelectedItem());
-                    try {
-                        ServiceManager.getInstance().createBuilding(item1);
-                        numberTF.setText("");
-                        buildingTableModel.refresh();
-                        Launcher.mainFrame.initLeftSideTree();
-                    } catch (Exception e1) {
-                        Launcher.mainFrame.setStatusError("Ошибка сохранения записи!", e1);
-                    }
-                }
-            });
+            buildingTableModel.refresh();
         } catch (CommonException e) {
             Launcher.mainFrame.setStatusError("Ошибка получения списка данных!", e);
         }
+
     }
 
     private GridBagConstraints createGridBagConstraints(int x, int y) {

@@ -98,10 +98,10 @@ public class DistrictListIForm extends ObservableIPanel implements Observer {
         newBtn.addActionListener(e -> newDistrict());
         changeBtn.addActionListener(e -> renameDistrict());
 
-        init();
     }
 
-    private void init() {
+    @Override
+    public void beforeShow() {
         initDistrictList();
         initAddressList();
     }

@@ -1,6 +1,7 @@
 package com.del.ministry.dao;
 
 import com.del.ministry.db.Building;
+import com.del.ministry.utils.StringUtil;
 import com.del.ministry.utils.Utils;
 import com.del.ministry.utils.query.QuerySequence;
 import com.del.ministry.view.filters.BuildingFilter;
@@ -10,6 +11,7 @@ import com.google.common.collect.Maps;
 import javax.persistence.Query;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BuildingDAO extends AbstractDAO<Building, Long> {
 
@@ -62,7 +64,7 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
     }
 
     public RootNode getTree() {
-        List<Building> list = manager().createQuery("select b from Building b").getResultList();
+        List<Building> list = manager().createQuery("select b from Building b join fetch b.street").getResultList();
         List<Object[]> countList = manager().createQuery("select da.building.id, count(da) from DistrictAddress da group by da.building.id").getResultList();
         Map<Long, Integer> usageCount = Maps.newHashMap();
         countList.forEach(a -> {
@@ -71,7 +73,16 @@ public class BuildingDAO extends AbstractDAO<Building, Long> {
             usageCount.put(id, count);
         });
         RootNode root = new RootNode();
-        for (Building building : list) {
+        for (Building building : list.stream().sorted((o1, o2) -> {
+            if (o1 == o2) return 0;
+            if (o1 == null) return -1;
+            if (o2 == null) return 1;
+            int r = o1.getStreet().getName().compareTo(o2.getStreet().getName());
+            if (r == 0) {
+                r = StringUtil.findStreetNumber(o1.getNumber().trim()).compareTo(StringUtil.findStreetNumber(o2.getNumber().trim()));
+            }
+            return r;
+        }).collect(Collectors.toList())) {
             root.addChild(building, Utils.nvl(usageCount.get(building.getId()), 0));
         }
         return root;

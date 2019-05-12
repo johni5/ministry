@@ -105,4 +105,18 @@ public class StringUtil {
         return i;
     }
 
+    public static Integer findStreetNumber(String n) {
+        int r = -1;
+        if (!isTrimmedEmpty(n))
+            while (n.length() > 0) {
+                try {
+                    r = Integer.parseInt(n);
+                    break;
+                } catch (NumberFormatException e) {
+                    n = n.substring(0, n.length() - 1);
+                }
+            }
+        return r;
+    }
+
 }

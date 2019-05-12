@@ -52,6 +52,7 @@ public class AppointmentsIForm extends ObservableIPanel {
     private JCheckBox filterOnlyActive;
     private JComboBox<DistrictNumbers> districtNumbersF;
     private AddressType defaultAddressType;
+    private JComboBox<PublisherItem> publishersF;
 
     public AppointmentsIForm() {
         setMinimumSize(new Dimension(600, 400));
@@ -79,7 +80,7 @@ public class AppointmentsIForm extends ObservableIPanel {
         publisherFilterF = new JTextField();
         districtFilterF = new JTextField();
         districtNumbersF = new JComboBox<>();
-        JComboBox<PublisherItem> publishersF = new JComboBox<>();
+        publishersF = new JComboBox<>();
         filterOnlyActive = new JCheckBox("Назначен в настоящее время", true);
 
         setLayout(new BorderLayout(0, 0));
@@ -179,8 +180,13 @@ public class AppointmentsIForm extends ObservableIPanel {
         searchBtn.addActionListener(e -> initTable());
         pdfBtn.addActionListener(e -> makePDF());
 
+    }
+
+    @Override
+    public void beforeShow() {
         initDistrictList();
-        initPublishersList(publishersF);
+        initPublishersList();
+        initPublishersList();
         initTable();
 
     }
@@ -196,7 +202,7 @@ public class AppointmentsIForm extends ObservableIPanel {
         }
     }
 
-    private void initPublishersList(JComboBox<PublisherItem> publishersF) {
+    private void initPublishersList() {
         try {
             List<Publisher> publishers = ServiceManager.getInstance().findPublishers();
             List<PublisherItem> items = publishers.stream().map(publisher -> new PublisherItem(publisher, true)).collect(Collectors.toList());
