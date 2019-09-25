@@ -20,12 +20,15 @@ public class AboutIForm extends ObservableIFrame {
         JLabel info = new JLabel(Utils.getBundle().getString("version.info"));
         JLabel build = new JLabel(Utils.getBundle().getString("version.date"));
 
+        Image img = Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/img/ico_64x64.png"));
+        JLabel imgLabel = new JLabel(new ImageIcon(img));
+
         panel.add(FormBuilder.create().
-                        columns("p, 5, p")
-                        .rows("p, 5, p")
-                        .padding(Paddings.DIALOG)
-                        .add("Версия:").xy(1, 1).add(info).xy(3, 1)
-                        .add("Сборка:").xy(1, 3).add(build).xy(3, 3)
+                        columns("64, 10, p, 5, p")
+                        .rows("5, p, 5, p, 30")
+                        .padding(Paddings.DIALOG).add(imgLabel).xywh(1, 1, 2, 5)
+                        .add("Версия:").xy(3, 2).add(info).xy(5, 2)
+                        .add("Сборка:").xy(3, 4).add(build).xy(5, 4)
                         .build(),
                 BorderLayout.CENTER);
 

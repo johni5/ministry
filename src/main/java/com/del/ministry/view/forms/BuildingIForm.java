@@ -202,6 +202,11 @@ public class BuildingIForm extends ObservableIPanel {
 
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование домов";
+    }
+
     private GridBagConstraints createGridBagConstraints(int x, int y) {
         GridBagConstraints gbc_textField = new GridBagConstraints();
         gbc_textField.insets = new Insets(2, 2, 2, 2);

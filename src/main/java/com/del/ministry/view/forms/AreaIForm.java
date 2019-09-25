@@ -108,6 +108,11 @@ public class AreaIForm extends ObservableIPanel {
         });
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование районов";
+    }
+
     class AreaTableModel implements TableModel {
 
         private List<String> header = Lists.newArrayList("ИД", "Название", "Изменено");

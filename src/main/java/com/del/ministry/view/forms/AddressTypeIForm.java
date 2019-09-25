@@ -134,6 +134,11 @@ public class AddressTypeIForm extends ObservableIPanel {
         });
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование типов адресов";
+    }
+
     class AddressTypeTableModel implements TableModel {
 
         private List<String> header = Lists.newArrayList("ИД", "Название", "Код", "Изменено");

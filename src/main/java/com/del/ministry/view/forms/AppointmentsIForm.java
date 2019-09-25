@@ -191,6 +191,11 @@ public class AppointmentsIForm extends ObservableIPanel {
 
     }
 
+    @Override
+    public String getTitle() {
+        return "Назначения участков";
+    }
+
     private void initDistrictList() {
         try {
             List<District> districts = ServiceManager.getInstance().allDistricts();

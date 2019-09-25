@@ -114,6 +114,11 @@ public class CityIForm extends ObservableIPanel {
         });
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование населенных пунктов";
+    }
+
     class CityTableModel implements TableModel {
 
         private List<String> header = Lists.newArrayList("ИД", "Название", "Изменено");

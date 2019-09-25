@@ -1,6 +1,7 @@
 package com.del.ministry.view.forms;
 
 import com.del.ministry.dao.ServiceManager;
+import com.del.ministry.utils.Unchecked;
 import com.del.ministry.view.actions.ObservableIPanel;
 import com.google.common.collect.Maps;
 
@@ -38,14 +39,12 @@ public class MainForms {
         }
     }
 
-    public <T extends ObservableIPanel> T find(Class<T> aClass) {
-        return (T) formsIndex.get(aClass);
-    }
-
     public <T extends ObservableIPanel> T show(Class<T> aClass) {
-        T view = find(aClass);
+        T view = Unchecked.cast(formsIndex.get(aClass));
         view.beforeShow();
         rootView.setViewportView(view);
+        JFrame frame = (JFrame) SwingUtilities.getRoot(rootView);
+        if (frame != null) frame.setTitle(view.getTitle());
         ServiceManager.getInstance().clear();
         return view;
     }

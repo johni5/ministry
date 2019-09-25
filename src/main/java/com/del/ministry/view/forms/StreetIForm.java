@@ -107,6 +107,11 @@ public class StreetIForm extends ObservableIPanel {
         });
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование улиц";
+    }
+
     class StreetTableModel implements TableModel {
 
         private List<String> header = Lists.newArrayList("ИД", "Название", "Изменено");

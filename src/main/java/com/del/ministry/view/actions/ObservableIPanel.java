@@ -27,4 +27,6 @@ abstract public class ObservableIPanel extends JPanel {
     public void beforeShow() {
         //
     }
+
+    public abstract String getTitle();
 }

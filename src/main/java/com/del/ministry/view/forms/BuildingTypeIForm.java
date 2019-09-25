@@ -133,6 +133,11 @@ public class BuildingTypeIForm extends ObservableIPanel {
         });
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование типов домов";
+    }
+
     class BuildingTypeTableModel implements TableModel {
 
         private List<String> header = Lists.newArrayList("ИД", "Название", "Код", "Изменено");

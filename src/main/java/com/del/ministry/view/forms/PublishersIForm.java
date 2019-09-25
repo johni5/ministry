@@ -5,7 +5,6 @@ import com.del.ministry.db.Publisher;
 import com.del.ministry.utils.CommonException;
 import com.del.ministry.utils.DateUtilz;
 import com.del.ministry.view.Launcher;
-import com.del.ministry.view.actions.ObservableIFrame;
 import com.del.ministry.view.actions.ObservableIPanel;
 import com.del.ministry.view.models.YesNoList;
 import com.del.ministry.view.models.table.ReadOnlyTableModel;
@@ -19,7 +18,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 
 public class PublishersIForm extends ObservableIPanel {
@@ -55,23 +55,35 @@ public class PublishersIForm extends ObservableIPanel {
             editBtn.setEnabled(table.getSelectedRow() > -1);
         });
 
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (e.getClickCount() == 2) editEvent(null);
+            }
+        });
+
         initTable();
     }
 
+    @Override
+    public String getTitle() {
+        return "Редактирование возвещателей";
+    }
+
     private void addEvent(ActionEvent e) {
-        JFrame i = new JFrame("Добавить нового возвещателя");
+        JDialog i = new JDialog(Launcher.mainFrame, "Добавить нового возвещателя", Dialog.ModalityType.APPLICATION_MODAL);
         showPersonalForm(null, i);
     }
 
     private void editEvent(ActionEvent e) {
-        JFrame i = new JFrame("Редактировать возвещателя");
+        JDialog i = new JDialog(Launcher.mainFrame, "Редактировать возвещателя", Dialog.ModalityType.APPLICATION_MODAL);
         showPersonalForm(publishers.get(table.getSelectedRow()), i);
     }
 
     private void delEvent(ActionEvent e) {
         Publisher publisher = publishers.get(table.getSelectedRow());
         try {
-            int answer = JOptionPane.showInternalConfirmDialog(this, "Удалить возвещателя " + publisher.getLastName() + "?", "Удаление", JOptionPane.YES_NO_OPTION);
+            int answer = JOptionPane.showConfirmDialog(Launcher.mainFrame, "Удалить возвещателя " + publisher.getLastName() + "?", "Удаление", JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 ServiceManager.getInstance().deletePublisher(publisher.getId());
                 initTable();
@@ -81,7 +93,7 @@ public class PublishersIForm extends ObservableIPanel {
         }
     }
 
-    private void showPersonalForm(Publisher publisher, JFrame i) {
+    private void showPersonalForm(Publisher publisher, JDialog i) {
         i.setDefaultCloseOperation(WindowConstants.HIDE_ON_CLOSE);
         JButton cancelBtn = new JButton("Отмена");
         JButton saveBtn = new JButton("Сохранить");
@@ -140,8 +152,8 @@ public class PublishersIForm extends ObservableIPanel {
         buttons.add(cancelBtn);
 
         i.pack();
+        i.setLocationRelativeTo(Launcher.mainFrame);
         i.setVisible(true);
-        i.setLocationRelativeTo(this);
     }
 
     private Map<Integer, Publisher> publishers;

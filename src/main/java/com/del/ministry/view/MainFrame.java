@@ -39,6 +39,7 @@ public class MainFrame extends JFrame {
      */
     public MainFrame() {
         setTitle("Система учета территории");
+        setIconImage(Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/img/ico_32x32.png")));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1024, 800);
 
