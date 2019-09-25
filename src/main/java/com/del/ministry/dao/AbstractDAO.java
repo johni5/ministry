@@ -1,5 +1,7 @@
 package com.del.ministry.dao;
 
+import com.del.ministry.utils.CommonException;
+
 import javax.persistence.EntityManager;
 import java.util.Date;
 import java.util.concurrent.Callable;
@@ -14,9 +16,10 @@ abstract public class AbstractDAO<T, ID> {
         this.tClass = tClass;
     }
 
-    public void createAndCommit(T entity) {
+    public void createAndCommit(T entity) throws CommonException {
         transaction(() -> {
             manager().persist(entity);
+            manager().flush();
             return null;
         });
     }
@@ -25,8 +28,12 @@ abstract public class AbstractDAO<T, ID> {
         manager().persist(entity);
     }
 
-    public T updateAndCommit(T entity) {
-        return transaction(() -> manager().merge(entity));
+    public T updateAndCommit(T entity) throws CommonException {
+        return transaction(() -> {
+            manager().merge(entity);
+            manager().flush();
+            return entity;
+        });
     }
 
     public T update(T entity) {
@@ -37,23 +44,25 @@ abstract public class AbstractDAO<T, ID> {
         manager().refresh(entity);
     }
 
-    public void removeAndCommit(ID id) {
+    public void removeAndCommit(ID id) throws CommonException {
         transaction(() -> {
             remove(id);
+            manager().flush();
             return null;
         });
     }
 
-    protected <V> V transaction(Callable<V> t) {
+    protected <V> V transaction(Callable<V> t) throws CommonException {
         manager().getTransaction().begin();
+        V result;
         try {
-            return t.call();
+            result = t.call();
         } catch (Exception e) {
             manager().getTransaction().rollback();
-        } finally {
-            manager().getTransaction().commit();
+            throw new CommonException(e);
         }
-        return null;
+        manager().getTransaction().commit();
+        return result;
     }
 
     public void remove(ID id) {
