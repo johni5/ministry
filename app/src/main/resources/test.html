@@ -1,0 +1,48 @@
+<div>
+    <input type="text" class="to-copy" placeholder="Type something..." aria-label="Type something">
+    <button class="write-btn">Copy to clipboard</button>
+</div>
+
+<div>
+    <h3 class="clipboard-results"></h3>
+    <button class="read-btn">Paste from clipboard</button>
+</div>
+
+<script>
+    const readBtn = document.querySelector('.read-btn');
+    const writeBtn = document.querySelector('.write-btn');
+
+    const resultsEl = document.querySelector('.clipboard-results');
+    const inputEl = document.querySelector('.to-copy');
+
+    readBtn.addEventListener('click', () => {
+        navigator.clipboard.readText()
+            .then(text => {
+                resultsEl.innerText = text;
+            })
+            .catch(err => {
+                console.log('Something went wrong', err);
+            })
+    });
+
+    writeBtn.addEventListener('click', () => {
+        const inputValue = inputEl.value.trim();
+        if (inputValue) {
+            navigator.clipboard.writeText(inputValue)
+                .then(() => {
+                    inputEl.value = '';
+                    if (writeBtn.innerText !== 'Copied!') {
+                        const originalText = writeBtn.innerText;
+                        writeBtn.innerText = 'Copied!';
+                        setTimeout(() => {
+                            writeBtn.innerText = originalText;
+                        }, 1500);
+                    }
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                })
+        }
+    });
+</script>
+
